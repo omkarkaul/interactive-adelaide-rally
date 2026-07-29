@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>2026 Shannons Adelaide Rally Day 1</name>
+    <Style id="line-0"><LineStyle><color>ff0000ff</color></LineStyle></Style>
+    <StyleMap id="map-0"><Pair><key>normal</key><styleUrl>#line-0</styleUrl></Pair></StyleMap>
+    <Folder>
+      <name>SS3 – Knotts Hill &amp; SS9 – Knotts Hill Short</name>
+      <Placemark>
+        <name>SS3 – Knotts Hill &amp; SS9 – Knotts Hill Short</name>
+        <styleUrl>#map-0</styleUrl>
+        <LineString>
+          <coordinates>
+            138.7401234567,-34.9187654321,0
+            138.7412345678,-34.9198765432,0
+            138.7423456789,-34.9209876543,0
+          </coordinates>
+        </LineString>
+      </Placemark>
+      <Placemark>
+        <name>215 Marble Hill Rd, Marble Hill SA 5137, Australia</name>
+        <Point><coordinates>138.7401234567,-34.9187654321,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>1 Pound Rd, Marble Hill SA 5137, Australia</name>
+        <Point><coordinates>138.7423456789,-34.9209876543,0</coordinates></Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>SS4 &amp; SS7 - Cherryville Plus 1 &amp; 2</name>
+      <Placemark>
+        <name>SS4 &amp; SS7 - Cherryville Plus 1 &amp; 2</name>
+        <LineString>
+          <coordinates>138.80,-34.88,0 138.81,-34.89,0</coordinates>
+        </LineString>
+      </Placemark>
+      <Placemark>
+        <name>Tembys Rd, Cherryville SA 5134, Australia</name>
+        <Point><coordinates>138.80,-34.88,0</coordinates></Point>
+      </Placemark>
+    </Folder>
+  </Document>
+</kml>

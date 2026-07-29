@@ -171,18 +171,18 @@ export function parseKml(xml: string): KmlDocument {
   })
   const parsed = parser.parse(xml) as XmlNode
   const kml = (parsed.kml ?? parsed) as XmlNode
-  const document = asArray(kml.Document as XmlNode | XmlNode[] | undefined)[0] ?? kml
+  const doc = asArray(kml.Document as XmlNode | XmlNode[] | undefined)[0] ?? kml
 
   const folders: KmlFolder[] = []
-  walkFolders(document, folders)
+  walkFolders(doc, folders)
 
   // Some exports skip folders and hang stage placemarks directly off the document.
   if (folders.length === 0) {
-    for (const placemark of asArray(document.Placemark as XmlNode | XmlNode[] | undefined)) {
+    for (const placemark of asArray(doc.Placemark as XmlNode | XmlNode[] | undefined)) {
       const wrapped = folderFrom({ name: text(placemark.name), Placemark: placemark })
       if (wrapped && wrapped.line) folders.push(wrapped)
     }
   }
 
-  return { name: text(document.name).trim(), folders }
+  return { name: text(doc.name).trim(), folders }
 }
