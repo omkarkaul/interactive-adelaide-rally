@@ -1,0 +1,16 @@
+{
+  "year": 2025,
+  "synthetic": true,
+  "sources": [
+    {
+      "mid": "SYNTHETIC-2025",
+      "url": "https://example.invalid/synthetic-2025",
+      "fetchedAt": "2025-10-17T00:00:00.000Z",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "documentName": "Synthetic 2025 fixture"
+    }
+  ],
+  "notes": {
+    "purpose": "Proves the year abstraction: adding a year is a directory, not a code change."
+  }
+}

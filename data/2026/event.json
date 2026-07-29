@@ -78,7 +78,8 @@
       "reopensAt": "18:30",
       "confirmed": true,
       "notes": [
-        "Shares its mapped route with SS9 Knotts Hill Short. The line shown is the full-length SS3 route; the organisers publish no separate geometry for the short version."
+        "Shares its mapped route with SS9 Knotts Hill Short. The line shown is the full-length SS3 route; the organisers publish no separate geometry for the short version.",
+        "Source defect: the closures page prints the finish as \"Pound Rd/Marble Hill Rdtion\", with the tail of the word Intersection run into the road name."
       ]
     },
     {
@@ -131,7 +132,7 @@
       "id": "d1-stafford-hillclimb",
       "stageCodes": ["SS8"],
       "roadsClosed": ["Fox Creek Rd", "Mawson Trail", "Staffords Rd"],
-      "start": "Fox Creek Bike Park Carpark",
+      "start": "Fox Creek Bike Park Carpark (Fox Creek Rd)",
       "finish": "Staffords Rd ~750m from Mawson Trail",
       "intersections": ["Croft Rd", "Coldstore Rd"],
       "closesAt": "11:25",
@@ -150,7 +151,8 @@
       "reopensAt": "18:30",
       "confirmed": true,
       "notes": [
-        "Shares its mapped route with SS3 Knotts Hill. The line shown is the full-length SS3 route, not the shortened SS9 course."
+        "Shares its mapped route with SS3 Knotts Hill. The line shown is the full-length SS3 route, not the shortened SS9 course.",
+        "Source defect: the closures page prints the finish as \"Pound Rd/Marble Hill Rdtion\", with the tail of the word Intersection run into the road name."
       ]
     },
     {
@@ -236,7 +238,9 @@
       "closesAt": "10:45",
       "reopensAt": "16:30",
       "confirmed": false,
-      "notes": []
+      "notes": [
+        "Source defect: the closures page spells Lobethal Rd as \"Lobthal Rd\" and lists Boundary Dr twice in the intersection run."
+      ]
     },
     {
       "id": "d2-millbrook",

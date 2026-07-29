@@ -1,0 +1,76 @@
+{
+  "event": {
+    "year": 2025,
+    "name": "2025 Adelaide Rally (synthetic fixture)",
+    "days": [
+      { "dayNumber": 1, "date": "2025-10-17", "label": "Day 1 — Friday 17 October" },
+      { "dayNumber": 2, "date": "2025-10-18", "label": "Day 2 — Saturday 18 October" }
+    ]
+  },
+  "stages": [
+    { "code": "SS1", "name": "Greenhill Loop 1", "day": 1, "order": 1, "spectator": false, "featureId": "greenhill-loop", "closureId": "y25-d1-greenhill" },
+    { "code": "SS2", "name": "Piccadilly", "day": 1, "order": 2, "spectator": true, "featureId": "piccadilly", "closureId": "y25-d1-piccadilly" },
+    { "code": "SS3", "name": "Greenhill Loop 2", "day": 1, "order": 3, "spectator": false, "featureId": "greenhill-loop", "closureId": "y25-d1-greenhill" },
+    { "code": "SS4", "name": "Crafers", "day": 2, "order": 1, "spectator": false, "featureId": "crafers", "closureId": "y25-d2-crafers" },
+    { "code": "SS5", "name": "Bridgewater", "day": 2, "order": 2, "spectator": false, "featureId": null, "closureId": "y25-d2-bridgewater" }
+  ],
+  "closures": [
+    {
+      "id": "y25-d1-greenhill",
+      "stageCodes": ["SS1", "SS3"],
+      "roadsClosed": ["Greenhill Rd"],
+      "start": "Waterfall Gully Rd",
+      "finish": "Summit Rd",
+      "intersections": ["Woodland Way", "Colonial Dr"],
+      "closesAt": "08:00",
+      "reopensAt": "16:30",
+      "confirmed": true,
+      "notes": []
+    },
+    {
+      "id": "y25-d1-piccadilly",
+      "stageCodes": ["SS2"],
+      "roadsClosed": ["Piccadilly Rd"],
+      "start": "Sprigg Rd",
+      "finish": "Old Carey Gully Rd",
+      "intersections": [],
+      "closesAt": "09:15",
+      "reopensAt": "14:00",
+      "confirmed": true,
+      "notes": []
+    },
+    {
+      "id": "y25-d2-crafers",
+      "stageCodes": ["SS4"],
+      "roadsClosed": ["Old Mount Barker Rd"],
+      "start": "Waverley Ridge Rd",
+      "finish": "Piccadilly Rd",
+      "intersections": ["Ayers Hill Rd"],
+      "closesAt": "08:30",
+      "reopensAt": "15:45",
+      "confirmed": false,
+      "notes": []
+    },
+    {
+      "id": "y25-d2-bridgewater",
+      "stageCodes": ["SS5"],
+      "roadsClosed": ["Mount Barker Rd"],
+      "start": "Cox Creek Rd",
+      "finish": "Aldgate Valley Rd",
+      "intersections": [],
+      "closesAt": "10:00",
+      "reopensAt": "17:00",
+      "confirmed": false,
+      "notes": [
+        "No mapped route was published for this stage, so the card is list-only. This case exists in the fixture on purpose: featureId is null and the app must still render."
+      ]
+    }
+  ],
+  "spectators": {
+    "SS2": {
+      "name": "Piccadilly spectator stage",
+      "url": "https://example.invalid/piccadilly",
+      "description": "Synthetic spectator point, present so the fixture exercises the spectator section."
+    }
+  }
+}

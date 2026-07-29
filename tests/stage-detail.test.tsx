@@ -9,7 +9,12 @@ import { maps, type FakeMap } from './map-mock'
 
 vi.mock('maplibre-gl', async () => {
   const { FakeMapLibreMap } = await import('./map-mock')
-  return { MapLibreMap: FakeMapLibreMap, NavigationControl: class {}, ScaleControl: class {} }
+  return {
+    MapLibreMap: FakeMapLibreMap,
+    NavigationControl: class {},
+    ScaleControl: class {},
+    config: { WORKER_URL: '' },
+  }
 })
 
 const ALL_CODES = Array.from({ length: 30 }, (_, i) => `SS${i + 1}`)

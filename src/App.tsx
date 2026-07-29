@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { loadYear } from './domain/load'
 import { availableYears } from './domain/registry'
 import { focusReducer, NO_FOCUS } from './domain/focus'
 import { closuresForDay } from './domain/link'
 import { resolveStageDetail } from './domain/detail'
 import { clampToWindow, envelopeOf, minutesOfDay } from './domain/time'
-import { RallyMap } from './map/RallyMap'
 import { DayTabs } from './ui/DayTabs'
 import { StagePanel } from './ui/StagePanel'
 import { StageDetail } from './ui/StageDetail'
@@ -14,6 +13,12 @@ import { TimeScrubber } from './ui/TimeScrubber'
 import { SafetyNotice, SourceNotice } from './ui/SafetyNotice'
 import { parseUrlState, toSearch } from './url'
 import type { Cursor, RallyYear, StageCode } from './domain/types'
+
+// MapLibre is over a megabyte and blocks first paint if it is in the entry
+// chunk. The stage list and closure times are readable without it.
+const RallyMap = lazy(() =>
+  import('./map/RallyMap').then((module) => ({ default: module.RallyMap })),
+)
 
 const PANEL_WIDTH = 360
 const NARROW = '(max-width: 860px)'
@@ -205,18 +210,20 @@ export default function App({
         </aside>
 
         <div className="app__map">
-          <RallyMap
-            year={year}
-            day={day}
-            focus={focus}
-            minutes={minutes}
-            onHover={onHover}
-            onSelect={onSelect}
-            panelWidth={narrow ? 0 : PANEL_WIDTH}
-            detail={detail}
-            cursor={cursor}
-            onCursor={setCursor}
-          />
+          <Suspense fallback={<div className="app__map-loading">Loading map…</div>}>
+            <RallyMap
+              year={year}
+              day={day}
+              focus={focus}
+              minutes={minutes}
+              onHover={onHover}
+              onSelect={onSelect}
+              panelWidth={narrow ? 0 : PANEL_WIDTH}
+              detail={detail}
+              cursor={cursor}
+              onCursor={setCursor}
+            />
+          </Suspense>
         </div>
       </main>
 

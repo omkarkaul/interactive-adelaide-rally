@@ -7,7 +7,12 @@ import { maps } from './map-mock'
 
 vi.mock('maplibre-gl', async () => {
   const { FakeMapLibreMap } = await import('./map-mock')
-  return { MapLibreMap: FakeMapLibreMap, NavigationControl: class {}, ScaleControl: class {} }
+  return {
+    MapLibreMap: FakeMapLibreMap,
+    NavigationControl: class {},
+    ScaleControl: class {},
+    config: { WORKER_URL: '' },
+  }
 })
 
 const card = (code: string) => screen.getByRole('button', { name: new RegExp(`^${code}\\b`) })
