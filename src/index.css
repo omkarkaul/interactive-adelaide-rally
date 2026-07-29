@@ -269,6 +269,122 @@ a {
   color: var(--focus);
 }
 
+.badge--live {
+  border-color: color-mix(in srgb, var(--ok) 60%, transparent);
+  color: var(--ok);
+}
+
+/* Time */
+
+.app__time {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 16px 12px;
+  background: var(--bg-raised);
+  border-top: 1px solid var(--border);
+}
+
+.scrubber {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.scrubber__label {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.scrubber__input {
+  flex: 1;
+  accent-color: var(--accent);
+  min-width: 120px;
+}
+
+.scrubber__readout {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 96px;
+  font-size: 14px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.scrubber__now {
+  padding: 3px 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-dim);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+}
+
+.scrubber__now:hover {
+  color: var(--text);
+  border-color: #3a4050;
+}
+
+.gantt {
+  width: 100%;
+  overflow: hidden;
+}
+
+.gantt__svg {
+  display: block;
+}
+
+.gantt__tick {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.gantt__tick-label {
+  fill: var(--text-dim);
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gantt__row {
+  cursor: pointer;
+}
+
+.gantt__row-hit {
+  fill: transparent;
+}
+
+.gantt__row:hover .gantt__row-hit,
+.gantt__row.is-focused .gantt__row-hit {
+  fill: color-mix(in srgb, var(--focus) 12%, transparent);
+}
+
+.gantt__row.is-dimmed {
+  opacity: 0.32;
+}
+
+.gantt__bar-label {
+  fill: #12141a;
+  font-size: 9px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.gantt__row.is-focused .gantt__bar {
+  stroke: var(--focus);
+  stroke-width: 1.5;
+}
+
+.gantt__now {
+  stroke: var(--focus);
+  stroke-width: 1.5;
+  pointer-events: none;
+}
+
 /* Notices */
 
 .safety-notice {
