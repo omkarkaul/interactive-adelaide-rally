@@ -7,6 +7,7 @@ export interface FakeMap {
   layers: string[]
   featureState: Map<string, Record<string, unknown>>
   layoutProperties: Map<string, unknown>
+  paintProperties: Map<string, unknown>
   fitBounds: ReturnType<typeof vi.fn>
   fireLoad: () => void
   fire: (type: string, layerId: string | null, event: unknown) => void
@@ -19,6 +20,7 @@ export class FakeMapLibreMap implements FakeMap {
   layers: string[] = []
   featureState = new Map<string, Record<string, unknown>>()
   layoutProperties = new Map<string, unknown>()
+  paintProperties = new Map<string, unknown>()
   fitBounds = vi.fn()
   private handlers = new Map<string, Handler[]>()
 
@@ -49,8 +51,13 @@ export class FakeMapLibreMap implements FakeMap {
   addControl() {
     return this
   }
-  addSource(id: string, source: unknown) {
-    this.sources.set(id, source)
+  addSource(id: string, source: { data?: unknown }) {
+    this.sources.set(id, {
+      ...source,
+      setData: (data: unknown) => {
+        this.sources.set(id, { ...(this.sources.get(id) as object), data })
+      },
+    })
     return this
   }
   addLayer(layer: { id: string }) {
@@ -65,6 +72,16 @@ export class FakeMapLibreMap implements FakeMap {
   }
   setLayoutProperty(id: string, property: string, value: unknown) {
     this.layoutProperties.set(`${id}.${property}`, value)
+    return this
+  }
+  setPaintProperty(id: string, property: string, value: unknown) {
+    this.paintProperties.set(`${id}.${property}`, value)
+    return this
+  }
+  project([lon, lat]: [number, number]) {
+    return { x: lon * 1000, y: lat * 1000 }
+  }
+  off() {
     return this
   }
   setFeatureState(target: { source: string; id: string }, state: Record<string, unknown>) {

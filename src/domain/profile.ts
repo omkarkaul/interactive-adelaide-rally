@@ -4,6 +4,7 @@ import type { Feature, LineString } from 'geojson'
 import type { Profile, ProfileSample } from './types'
 
 const SMOOTHING_WINDOW_M = 200
+const GRADE_WINDOW_M = 200
 
 export function hasElevation(line: Feature<LineString>): boolean {
   return line.geometry.coordinates.some((c) => c.length > 2 && Number.isFinite(c[2]))
@@ -50,9 +51,17 @@ export function buildProfile(
 
   const elevations = smooth(distances, raw, SMOOTHING_WINDOW_M)
 
+  // Grade is measured across a fixed ground distance, not across adjacent
+  // vertices. Corners are digitised metres apart, and a central difference over
+  // those neighbours divides by a run so short that any elevation noise reads as
+  // a cliff.
+  const halfKm = GRADE_WINDOW_M / 2000
   const samples: ProfileSample[] = elevations.map((elevationM, i) => {
-    const prev = Math.max(0, i - 1)
-    const next = Math.min(elevations.length - 1, i + 1)
+    let prev = i
+    while (prev > 0 && distances[i] - distances[prev] < halfKm) prev--
+    let next = i
+    while (next < elevations.length - 1 && distances[next] - distances[i] < halfKm) next++
+
     const runM = (distances[next] - distances[prev]) * 1000
     const riseM = elevations[next] - elevations[prev]
     return {

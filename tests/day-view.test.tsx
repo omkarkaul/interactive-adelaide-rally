@@ -91,7 +91,7 @@ describe('day view', () => {
     expect(options.padding.left).toBeGreaterThan(options.padding.right)
 
     map.fitBounds.mockClear()
-    await userEvent.click(card('SS4'))
+    await userEvent.click(screen.getByRole('button', { name: /All day 1 stages/ }))
     const [dayBounds, dayOptions] = map.fitBounds.mock.calls.at(-1)!
     expect(dayOptions.padding.left).toBe(dayOptions.padding.right)
     expect(dayBounds[2] - dayBounds[0]).toBeGreaterThan(bounds[2] - bounds[0])
@@ -99,7 +99,7 @@ describe('day view', () => {
 
   it('clears the selection on a click outside any stage', async () => {
     await userEvent.click(card('SS4'))
-    expect(card('SS4')).toHaveClass('is-focused')
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('SS4')
 
     act(() => map.fire('click', null, { defaultPrevented: false }))
     expect(card('SS4')).toHaveClass('is-normal')
@@ -110,8 +110,9 @@ describe('day view', () => {
     act(() => {
       map.fire('mousemove', 'stages-hit-day-1', { features: [{ id: 'beaumont' }] })
     })
-    expect(card('SS4')).toHaveClass('is-focused')
-    expect(card('SS1')).toHaveClass('is-dimmed')
+    expect(stateOf(map, 'cherryville-plus')).toMatchObject({ focused: true })
+    expect(stateOf(map, 'beaumont')).toMatchObject({ focused: false, dimmed: true })
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('SS4')
   })
 
   it('carries the safety notice and a source link on every view', () => {

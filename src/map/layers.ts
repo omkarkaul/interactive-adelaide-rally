@@ -131,6 +131,66 @@ export function terminiLabelLayer(day: number): SymbolLayerSpecification {
   }
 }
 
+export const DETAIL_SOURCE = 'detail-line'
+export const DETAIL_LAYER = 'detail-line-grade'
+export const DETAIL_ARROW_LAYER = 'detail-line-arrows'
+export const CURSOR_SOURCE = 'detail-cursor'
+export const CURSOR_LAYER = 'detail-cursor-dot'
+
+// The selected stage is redrawn on its own lineMetrics source so it can carry a
+// line-gradient, which is the same grade ramp the elevation profile uses.
+export function detailLineLayer(): LineLayerSpecification {
+  return {
+    id: DETAIL_LAYER,
+    type: 'line',
+    source: DETAIL_SOURCE,
+    layout: { 'line-cap': 'butt', 'line-join': 'round' },
+    paint: {
+      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 4, 14, 9] as never,
+      'line-gradient': ['interpolate', ['linear'], ['line-progress'], 0, COLOR.line] as never,
+    },
+  }
+}
+
+export function detailArrowLayer(): SymbolLayerSpecification {
+  return {
+    id: DETAIL_ARROW_LAYER,
+    type: 'symbol',
+    source: DETAIL_SOURCE,
+    layout: {
+      'symbol-placement': 'line',
+      'symbol-spacing': 90,
+      'text-field': '▸',
+      'text-font': ['Noto Sans Regular'],
+      'text-size': 15,
+      'text-keep-upright': false,
+      'text-allow-overlap': true,
+      'text-rotation-alignment': 'map',
+    },
+    paint: {
+      'text-color': '#ffffff',
+      'text-halo-color': COLOR.casing,
+      'text-halo-width': 1.4,
+    },
+  }
+}
+
+export function cursorLayer(): CircleLayerSpecification {
+  return {
+    id: CURSOR_LAYER,
+    type: 'circle',
+    source: CURSOR_SOURCE,
+    paint: {
+      'circle-radius': 6,
+      'circle-color': COLOR.focused,
+      'circle-stroke-width': 2,
+      'circle-stroke-color': COLOR.casing,
+    },
+  }
+}
+
+export const detailLayerIds = [DETAIL_LAYER, DETAIL_ARROW_LAYER, CURSOR_LAYER]
+
 export const layerIdsForDay = (day: number) => [
   casingLayerId(day),
   lineLayerId(day),

@@ -104,5 +104,14 @@
       "gorge-rallysprint: athlestone [SS11] \"SS11 Athlestone\"",
       "gorge-rallysprint: anstey-hill [SS12] \"SS12 Anstey Hill\""
     ]
+  },
+  "elevation": {
+    "provider": "AWS Open Data — Mapzen Terrarium terrain tiles",
+    "urlTemplate": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png",
+    "zoom": 13,
+    "maxSampleSpacingM": 50,
+    "method": "densified: every source vertex kept, extra samples inserted on long segments",
+    "attribution": "Mapzen Terrarium terrain tiles hosted by AWS Open Data, derived from SRTM, GMTED2010 and national datasets",
+    "enrichedAt": "2026-07-29T12:59:58.770Z"
   }
 }

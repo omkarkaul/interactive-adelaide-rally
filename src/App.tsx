@@ -3,14 +3,16 @@ import { loadYear } from './domain/load'
 import { availableYears } from './domain/registry'
 import { focusReducer, NO_FOCUS } from './domain/focus'
 import { closuresForDay } from './domain/link'
+import { resolveStageDetail } from './domain/detail'
 import { clampToWindow, envelopeOf, minutesOfDay } from './domain/time'
 import { RallyMap } from './map/RallyMap'
 import { DayTabs } from './ui/DayTabs'
 import { StagePanel } from './ui/StagePanel'
+import { StageDetail } from './ui/StageDetail'
 import { ClosureGantt } from './ui/ClosureGantt'
 import { TimeScrubber } from './ui/TimeScrubber'
 import { SafetyNotice, SourceNotice } from './ui/SafetyNotice'
-import type { RallyYear, StageCode } from './domain/types'
+import type { Cursor, RallyYear, StageCode } from './domain/types'
 
 const PANEL_WIDTH = 360
 
@@ -36,6 +38,7 @@ export default function App() {
   const [day, setDay] = useState(1)
   const [focus, dispatch] = useReducer(focusReducer, NO_FOCUS)
   const [minutes, setMinutes] = useState<number | null>(null)
+  const [cursor, setCursor] = useState<Cursor | null>(null)
 
   useEffect(() => {
     loadYear(availableYears()[0])
@@ -57,6 +60,14 @@ export default function App() {
     if (envelope) setMinutes(initialMinutes(envelope, liveNow))
   }, [envelope, liveNow])
 
+  // The selected stage is the detail view: one selection, one place to look.
+  const detail = useMemo(
+    () => (year && focus.kind === 'selected' ? resolveStageDetail(year, focus.code) : null),
+    [year, focus],
+  )
+
+  useEffect(() => setCursor(null), [detail?.code])
+
   const onHover = useCallback((code: StageCode | null) => {
     dispatch(code ? { type: 'hover', code } : { type: 'clear' })
   }, [])
@@ -69,6 +80,8 @@ export default function App() {
     setDay(next)
     dispatch({ type: 'clear' })
   }, [])
+
+  const onBack = useCallback(() => dispatch({ type: 'clear' }), [])
 
   if (error) {
     return (
@@ -98,18 +111,30 @@ export default function App() {
 
       <main className="app__body">
         <aside className="app__panel" style={{ width: PANEL_WIDTH }}>
-          <StagePanel
-            year={year}
-            day={day}
-            focus={focus}
-            minutes={minutes}
-            onHover={onHover}
-            onSelect={onSelect}
-          />
-          <footer className="app__panel-footer">
-            <SafetyNotice />
-            <SourceNotice fetchedAt={year.sources[0]?.fetchedAt ?? null} />
-          </footer>
+          {detail ? (
+            <StageDetail
+              year={year}
+              detail={detail}
+              cursor={cursor}
+              onCursor={setCursor}
+              onBack={onBack}
+            />
+          ) : (
+            <>
+              <StagePanel
+                year={year}
+                day={day}
+                focus={focus}
+                minutes={minutes}
+                onHover={onHover}
+                onSelect={onSelect}
+              />
+              <footer className="app__panel-footer">
+                <SafetyNotice />
+                <SourceNotice fetchedAt={year.sources[0]?.fetchedAt ?? null} />
+              </footer>
+            </>
+          )}
         </aside>
 
         <div className="app__map">
@@ -121,6 +146,9 @@ export default function App() {
             onHover={onHover}
             onSelect={onSelect}
             panelWidth={PANEL_WIDTH}
+            detail={detail}
+            cursor={cursor}
+            onCursor={setCursor}
           />
         </div>
       </main>

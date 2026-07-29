@@ -11,8 +11,18 @@ import {
   BASEMAP_STYLE_URL,
   DEFAULT_ZOOM,
 } from './basemap'
+import { cursorFromPoint, pointFromCursor } from '../domain/cursor'
+import { gradeGradientExpression } from '../ui/grade'
+import type { Cursor, StageDetail } from '../domain/types'
 import {
   casingLayer,
+  cursorLayer,
+  CURSOR_SOURCE,
+  DETAIL_SOURCE,
+  detailArrowLayer,
+  detailLayerIds,
+  detailLineLayer,
+  DETAIL_LAYER,
   hitLayer,
   hitLayerId,
   layerIdsForDay,
@@ -24,6 +34,8 @@ import {
 } from './layers'
 
 const DAYS = [1, 2, 3]
+const CURSOR_TOLERANCE_PX = 44
+const EMPTY = { type: 'FeatureCollection' as const, features: [] }
 
 interface Props {
   year: RallyYear
@@ -33,15 +45,36 @@ interface Props {
   onHover: (code: StageCode | null) => void
   onSelect: (code: StageCode | null) => void
   panelWidth: number
+  detail: StageDetail | null
+  cursor: Cursor | null
+  onCursor: (cursor: Cursor | null) => void
 }
 
-export function RallyMap({ year, day, focus, minutes, onHover, onSelect, panelWidth }: Props) {
+export function RallyMap({
+  year,
+  day,
+  focus,
+  minutes,
+  onHover,
+  onSelect,
+  panelWidth,
+  detail,
+  cursor,
+  onCursor,
+}: Props) {
   const container = useRef<HTMLDivElement>(null)
   const map = useRef<MapLibreMap | null>(null)
   const [ready, setReady] = useState(false)
 
   const handlers = useRef({ onHover, onSelect })
   handlers.current = { onHover, onSelect }
+
+  // The pointer handler is bound once per stage, so it reads the live cursor and
+  // callback through refs rather than being torn down on every cursor move.
+  const cursorRef = useRef(cursor)
+  cursorRef.current = cursor
+  const onCursorRef = useRef(onCursor)
+  onCursorRef.current = onCursor
 
   // featureId -> the stage code the map reports when that line is touched.
   // Repeat runs share a line, so the earliest run in the day owns the pointer.
@@ -103,6 +136,12 @@ export function RallyMap({ year, day, focus, minutes, onHover, onSelect, panelWi
           }
         })
       }
+
+      instance.addSource(DETAIL_SOURCE, { type: 'geojson', lineMetrics: true, data: EMPTY })
+      instance.addSource(CURSOR_SOURCE, { type: 'geojson', data: EMPTY })
+      instance.addLayer(detailLineLayer())
+      instance.addLayer(detailArrowLayer())
+      instance.addLayer(cursorLayer())
 
       instance.on('click', (event) => {
         if (!event.defaultPrevented) handlers.current.onSelect(null)
@@ -178,6 +217,84 @@ export function RallyMap({ year, day, focus, minutes, onHover, onSelect, panelWi
       padding: { top: 48, bottom: 48, right: 48, left: 48 + (selectedCode ? panelWidth : 0) },
     })
   }, [ready, year, day, selectedCode, panelWidth])
+
+  useEffect(() => {
+    const instance = map.current
+    if (!instance || !ready) return
+
+    const source = instance.getSource(DETAIL_SOURCE) as { setData: (d: unknown) => void } | undefined
+    source?.setData(detail ? { type: 'FeatureCollection', features: [detail.line] } : EMPTY)
+
+    for (const id of detailLayerIds) {
+      instance.setLayoutProperty(id, 'visibility', detail ? 'visible' : 'none')
+    }
+
+    if (detail?.profile) {
+      instance.setPaintProperty(
+        DETAIL_LAYER,
+        'line-gradient',
+        gradeGradientExpression(detail.profile) as never,
+      )
+    }
+  }, [ready, detail])
+
+  // rAF-throttled: MapLibre fires mousemove far faster than the cursor needs to move.
+  useEffect(() => {
+    const instance = map.current
+    if (!instance || !ready || !detail) return
+
+    let frame = 0
+    let latest: { x: number; y: number; lng: number; lat: number } | null = null
+
+    const resolve = () => {
+      frame = 0
+      if (!latest) return
+      const next = cursorFromPoint(detail.code, detail.line, [latest.lng, latest.lat], cursorRef.current)
+      // Tolerance has to be a screen distance: a fixed number of degrees would
+      // mean metres at one zoom and kilometres at another.
+      const projected = instance.project(pointFromCursor(detail.line, next) as [number, number])
+      const offsetPx = Math.hypot(projected.x - latest.x, projected.y - latest.y)
+      onCursorRef.current(offsetPx <= CURSOR_TOLERANCE_PX ? next : null)
+    }
+
+    const onMove = (event: { point: { x: number; y: number }; lngLat: { lng: number; lat: number } }) => {
+      latest = { x: event.point.x, y: event.point.y, lng: event.lngLat.lng, lat: event.lngLat.lat }
+      if (!frame) frame = requestAnimationFrame(resolve)
+    }
+    const onLeave = () => onCursorRef.current(null)
+
+    instance.on('mousemove', onMove)
+    instance.on('mouseout', onLeave)
+    return () => {
+      if (frame) cancelAnimationFrame(frame)
+      instance.off('mousemove', onMove)
+      instance.off('mouseout', onLeave)
+    }
+  }, [ready, detail])
+
+  useEffect(() => {
+    const instance = map.current
+    if (!instance || !ready) return
+
+    const source = instance.getSource(CURSOR_SOURCE) as { setData: (d: unknown) => void } | undefined
+    if (!source) return
+
+    if (!detail || !cursor || cursor.code !== detail.code) {
+      source.setData(EMPTY)
+      return
+    }
+
+    source.setData({
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: {},
+          geometry: { type: 'Point', coordinates: pointFromCursor(detail.line, cursor) },
+        },
+      ],
+    })
+  }, [ready, detail, cursor])
 
   return <div ref={container} className="rally-map" data-testid="rally-map" />
 }
