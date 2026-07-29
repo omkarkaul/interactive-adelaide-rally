@@ -7,3 +7,4 @@ dist-ssr/
 *.log
 .vitest-cache/
 .cache/
+.playwright-mcp/

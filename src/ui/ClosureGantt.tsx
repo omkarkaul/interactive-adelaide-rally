@@ -3,11 +3,13 @@ import { closuresForDay, stagesForDay } from '../domain/link'
 import { formatClock, isClosedAt, windowOf } from '../domain/time'
 import type { Focus, RallyYear, StageCode } from '../domain/types'
 import { COLOR } from '../map/layers'
+import { THUMB_PX } from './TimeScrubber'
 import { useElementSize } from './useElementSize'
 
 const ROW_HEIGHT = 22
 const BAR_HEIGHT = 12
 const AXIS_HEIGHT = 18
+const MIN_TICK_GAP_PX = 46
 
 interface Props {
   year: RallyYear
@@ -18,9 +20,27 @@ interface Props {
   onSelect: (code: StageCode | null) => void
 }
 
-function hourTicks(from: number, to: number): number[] {
+// The Gantt and the scrubber have to share one scale, or the now-line does not
+// sit under the thumb. A native range thumb's centre travels from half a thumb
+// in to half a thumb short of the far edge, so this maps the same span.
+export function timeScale(width: number, from: number, to: number) {
+  const track = Math.max(0, width - THUMB_PX)
+  const span = to - from
+  return (minutes: number) =>
+    track === 0 || span === 0 ? 0 : THUMB_PX / 2 + ((minutes - from) / span) * track
+}
+
+// Hourly ticks collide below about 700px, so the step widens to two hours and
+// then three rather than overprinting the labels.
+export function hourTicks(from: number, to: number, width: number): number[] {
+  const hours = Math.max(1, (to - from) / 60)
+  const perHour = width / hours
+  const step = perHour >= MIN_TICK_GAP_PX ? 1 : perHour * 2 >= MIN_TICK_GAP_PX ? 2 : 3
+
   const ticks: number[] = []
-  for (let t = Math.ceil(from / 60) * 60; t <= to; t += 60) ticks.push(t)
+  for (let t = Math.ceil(from / 60) * 60; t <= to; t += 60) {
+    if ((t / 60) % step === 0) ticks.push(t)
+  }
   return ticks
 }
 
@@ -33,8 +53,11 @@ export function ClosureGantt({ year, day, focus, minutes, onHover, onSelect }: P
   const from = Math.min(...windows.map((w) => w.closesAt))
   const to = Math.max(...windows.map((w) => w.reopensAt))
 
-  const height = closures.length * ROW_HEIGHT + AXIS_HEIGHT
-  const x = (m: number) => (width === 0 ? 0 : ((m - from) / (to - from)) * width)
+  // The axis sits at the top, directly under the scrubber it shares a scale
+  // with, rather than at the bottom where it drifts away from the control.
+  const height = AXIS_HEIGHT + closures.length * ROW_HEIGHT
+  const track = Math.max(0, width - THUMB_PX)
+  const x = timeScale(width, from, to)
 
   return (
     <div className="gantt" ref={ref}>
@@ -62,16 +85,10 @@ export function ClosureGantt({ year, day, focus, minutes, onHover, onSelect }: P
           </linearGradient>
         </defs>
 
-        {hourTicks(from, to).map((tick) => (
+        {hourTicks(from, to, track).map((tick) => (
           <g key={tick}>
-            <line
-              className="gantt__tick"
-              x1={x(tick)}
-              x2={x(tick)}
-              y1={0}
-              y2={height - AXIS_HEIGHT}
-            />
-            <text className="gantt__tick-label" x={x(tick)} y={height - 5} textAnchor="middle">
+            <line className="gantt__tick" x1={x(tick)} x2={x(tick)} y1={AXIS_HEIGHT} y2={height} />
+            <text className="gantt__tick-label" x={x(tick)} y={AXIS_HEIGHT - 6} textAnchor="middle">
               {formatClock(tick)}
             </text>
           </g>
@@ -107,14 +124,14 @@ export function ClosureGantt({ year, day, focus, minutes, onHover, onSelect }: P
               <rect
                 className="gantt__row-hit"
                 x={0}
-                y={index * ROW_HEIGHT}
+                y={AXIS_HEIGHT + index * ROW_HEIGHT}
                 width={width}
                 height={ROW_HEIGHT}
               />
               <rect
                 className="gantt__bar"
                 x={x(window.closesAt)}
-                y={index * ROW_HEIGHT + (ROW_HEIGHT - BAR_HEIGHT) / 2}
+                y={AXIS_HEIGHT + index * ROW_HEIGHT + (ROW_HEIGHT - BAR_HEIGHT) / 2}
                 width={Math.max(1, x(window.reopensAt) - x(window.closesAt))}
                 height={BAR_HEIGHT}
                 rx={2}
@@ -123,7 +140,7 @@ export function ClosureGantt({ year, day, focus, minutes, onHover, onSelect }: P
               <text
                 className="gantt__bar-label"
                 x={x(window.closesAt) + 5}
-                y={index * ROW_HEIGHT + ROW_HEIGHT / 2 + 3.5}
+                y={AXIS_HEIGHT + index * ROW_HEIGHT + ROW_HEIGHT / 2 + 3.5}
               >
                 {closure.stageCodes.join(' / ')}
               </text>
@@ -135,8 +152,8 @@ export function ClosureGantt({ year, day, focus, minutes, onHover, onSelect }: P
           className="gantt__now"
           x1={x(minutes)}
           x2={x(minutes)}
-          y1={0}
-          y2={height - AXIS_HEIGHT}
+          y1={AXIS_HEIGHT}
+          y2={height}
         />
       </svg>
     </div>

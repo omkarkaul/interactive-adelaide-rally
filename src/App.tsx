@@ -79,6 +79,7 @@ export default function App({
   )
   const [minutes, setMinutes] = useState<number | null>(null)
   const [cursor, setCursor] = useState<Cursor | null>(null)
+  const [showGantt, setShowGantt] = useState(!narrow)
   const restoredTime = useRef(initial.minutes)
 
   useEffect(() => {
@@ -182,6 +183,9 @@ export default function App({
       </header>
 
       <main className="app__body">
+        {/* The panel is the scroll container, so the notices scroll away with
+            the list instead of holding a fixed footer that on a phone left the
+            stage list a sliver, and the detail header can stick inside it. */}
         <aside className="app__panel">
           {detail ? (
             <StageDetail
@@ -201,10 +205,10 @@ export default function App({
                 onHover={onHover}
                 onSelect={onSelect}
               />
-              <footer className="app__panel-footer">
+              <div className="app__panel-footer">
                 <SafetyNotice />
                 <SourceNotice fetchedAt={year.sources[0]?.fetchedAt ?? null} />
-              </footer>
+              </div>
             </>
           )}
         </aside>
@@ -234,14 +238,29 @@ export default function App({
           onChange={setMinutes}
           liveNow={liveNow}
         />
-        <ClosureGantt
-          year={year}
-          day={day}
-          focus={focus}
-          minutes={minutes}
-          onHover={onHover}
-          onSelect={onSelect}
-        />
+
+        {/* Eleven closure rows is most of a phone screen. The scrubber and its
+            readout always show; the bars are opt-in on a narrow viewport. */}
+        <button
+          type="button"
+          className="app__time-toggle"
+          aria-expanded={showGantt}
+          aria-controls="closure-gantt"
+          onClick={() => setShowGantt(!showGantt)}
+        >
+          {showGantt ? 'Hide' : 'Show'} closure timeline
+        </button>
+
+        <div id="closure-gantt" hidden={!showGantt}>
+          <ClosureGantt
+            year={year}
+            day={day}
+            focus={focus}
+            minutes={minutes}
+            onHover={onHover}
+            onSelect={onSelect}
+          />
+        </div>
       </section>
     </div>
   )

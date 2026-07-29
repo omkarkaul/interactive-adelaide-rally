@@ -87,11 +87,14 @@ a {
   flex-direction: column;
   width: var(--panel-width);
   min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background: var(--bg-sunken);
   border-right: 1px solid var(--border);
 }
 
 .app__panel-footer {
+  margin-top: auto;
   padding: 12px 14px 16px;
   border-top: 1px solid var(--border);
 }
@@ -102,7 +105,10 @@ a {
   min-width: 0;
 }
 
-.rally-map {
+/* MapLibre puts .maplibregl-map on this element and its own stylesheet, which
+   loads after this one, sets position: relative at equal specificity. Scoping
+   the selector wins the cascade; without it the map collapses to zero height. */
+.app__map .rally-map {
   position: absolute;
   inset: 0;
 }
@@ -152,9 +158,7 @@ a {
 /* Stage list */
 
 .stage-panel {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
+  flex: 0 0 auto;
 }
 
 .stage-list {
@@ -290,6 +294,12 @@ a {
 
 .scrubber {
   display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.scrubber__bar {
+  display: flex;
   align-items: center;
   gap: 12px;
 }
@@ -301,13 +311,17 @@ a {
   letter-spacing: 0.04em;
 }
 
+/* Full width and zero margin so the thumb travels exactly the span the Gantt
+   draws across; ClosureGantt insets its scale by half a thumb to match. */
 .scrubber__input {
-  flex: 1;
+  display: block;
+  width: 100%;
+  margin: 0;
   accent-color: var(--accent);
-  min-width: 120px;
 }
 
 .scrubber__readout {
+  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -331,6 +345,21 @@ a {
 .scrubber__now:hover {
   color: var(--text);
   border-color: #3a4050;
+}
+
+.app__time-toggle {
+  align-self: flex-start;
+  padding: 2px 0;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+}
+
+.app__time-toggle:hover {
+  color: var(--text);
 }
 
 .gantt {
@@ -391,9 +420,7 @@ a {
 /* Stage detail */
 
 .detail {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
+  flex: 1 0 auto;
   padding: 12px 14px 20px;
 }
 
@@ -702,39 +729,27 @@ a {
     grid-template-columns: repeat(3, 1fr);
   }
 
+  /* Map above, stage list below, and the list gets whatever is left. Its own
+     scroll container is what lets the detail header stay stuck to the top. */
   .app__body {
     flex-direction: column-reverse;
   }
 
+  .app__map {
+    flex: 0 0 32vh;
+    min-height: 200px;
+  }
+
   .app__panel {
     width: 100%;
-    max-height: 52vh;
+    flex: 1 1 auto;
     border-right: none;
     border-top: 1px solid var(--border);
     border-radius: 12px 12px 0 0;
   }
 
-  .app__map {
-    flex: 1 1 40vh;
-    min-height: 200px;
-  }
-
-  .detail__header {
-    margin-top: -12px;
-  }
-
   .app__time {
     padding: 8px 12px calc(10px + env(safe-area-inset-bottom));
-  }
-
-  .scrubber {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .scrubber__label {
-    order: -1;
-    flex-basis: 100%;
   }
 
   /* Coarse pointers need a bigger target than a 12px range thumb. */

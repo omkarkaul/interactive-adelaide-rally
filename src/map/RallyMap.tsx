@@ -5,12 +5,7 @@ import { boundsOf, featuresForDay, stagesForDay, terminiFor } from '../domain/li
 import { emphasis } from '../domain/focus'
 import { isClosedAt } from '../domain/time'
 import type { Focus, RallyYear, StageCode } from '../domain/types'
-import {
-  ADELAIDE_HILLS_CENTER,
-  BASEMAP_ATTRIBUTION,
-  BASEMAP_STYLE_URL,
-  DEFAULT_ZOOM,
-} from './basemap'
+import { ADELAIDE_HILLS_CENTER, BASEMAP_STYLE_URL, DEFAULT_ZOOM } from './basemap'
 import { cursorFromPoint, pointFromCursor } from '../domain/cursor'
 import { gradeGradientExpression } from '../ui/grade'
 import type { Cursor, StageDetail } from '../domain/types'
@@ -96,7 +91,9 @@ export function RallyMap({
       style: BASEMAP_STYLE_URL,
       center: ADELAIDE_HILLS_CENTER,
       zoom: DEFAULT_ZOOM,
-      attributionControl: { customAttribution: BASEMAP_ATTRIBUTION },
+      // The Liberty style already declares OpenFreeMap, OpenMapTiles and
+      // OpenStreetMap; adding our own only printed the credits twice.
+      attributionControl: { compact: true },
     })
     map.current = instance
     instance.addControl(new NavigationControl({ showCompass: false }), 'top-right')
