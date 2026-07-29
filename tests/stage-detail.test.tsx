@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../src/App'
@@ -65,10 +65,13 @@ describe('stage detail view', () => {
 
   beforeEach(async () => {
     maps.length = 0
-    render(<App />)
+    render(<App search="" persistUrl={false} />)
     await screen.findByRole('tab', { name: /Day 1/ })
+    await waitFor(() => expect(maps).toHaveLength(1))
     map = maps[0]
-    act(() => map.fireLoad())
+    await act(async () => {
+      map.fireLoad()
+    })
   })
 
   afterEach(() => {
@@ -83,11 +86,14 @@ describe('stage detail view', () => {
     expect(card('SS4')).toBeInTheDocument()
   })
 
+  // The closure window sits in the sticky header rather than in a section of its
+  // own, so it stays on screen while a phone scrolls the rest of the card.
   it('renders the sections in the documented order', async () => {
     await userEvent.click(card('SS4'))
+    expect(screen.getByText('09:10–17:10').closest('header')).toBeInTheDocument()
+
     const headings = screen.getAllByRole('heading', { level: 3 }).map((h) => h.textContent)
     expect(headings).toEqual([
-      'Closure window',
       'Elevation',
       'Roads closed',
       'Start and finish',
@@ -152,7 +158,7 @@ describe('stage detail view', () => {
 
   it('reports the cursor position from the profile', async () => {
     await userEvent.click(card('SS4'))
-    const svg = screen.getByRole('img', { name: /Elevation profile for SS4/ })
+    const svg = screen.getByRole('slider', { name: /Elevation profile for SS4/ })
     vi.spyOn(svg, 'getBoundingClientRect').mockReturnValue({
       left: 0,
       width: 400,

@@ -78,6 +78,23 @@ describe('cursorFromPoint', () => {
 })
 
 describe('pointFromCursor', () => {
+  // turf's along walks off the coordinate array past the end of the line, which
+  // the End key and a drag past the right edge of the profile both reach.
+  it('clamps to the terminal coordinates rather than running off the line', () => {
+    const coordinates = straight.geometry.coordinates
+    const total = cumulativeDistancesKm(coordinates).at(-1)!
+
+    expect(pointFromCursor(straight, { code: 'SS4', distanceKm: total })).toEqual(coordinates.at(-1))
+    expect(pointFromCursor(straight, { code: 'SS4', distanceKm: total + 5 })).toEqual(
+      coordinates.at(-1),
+    )
+    expect(pointFromCursor(straight, { code: 'SS4', distanceKm: 0 })).toEqual(coordinates[0])
+    expect(pointFromCursor(straight, { code: 'SS4', distanceKm: -1 })).toEqual(coordinates[0])
+    expect(pointFromCursor(straight, { code: 'SS4', distanceKm: Number.NaN })).toEqual(
+      coordinates[0],
+    )
+  })
+
   it('round-trips a point on the line', () => {
     const original: [number, number] = [138.713, -34.9]
     const cursor = cursorFromPoint('SS4', straight, original)

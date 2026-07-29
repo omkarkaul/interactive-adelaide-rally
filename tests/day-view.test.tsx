@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../src/App'
@@ -22,10 +22,13 @@ describe('day view', () => {
 
   beforeEach(async () => {
     maps.length = 0
-    render(<App />)
+    render(<App search="" persistUrl={false} />)
     await screen.findByRole('tab', { name: /Day 1/ })
+    await waitFor(() => expect(maps).toHaveLength(1))
     map = maps[0]
-    act(() => map.fireLoad())
+    await act(async () => {
+      map.fireLoad()
+    })
   })
 
   afterEach(() => {
@@ -68,8 +71,8 @@ describe('day view', () => {
     expect(stateOf(map, 'beaumont')).toMatchObject({ focused: false, dimmed: true })
   })
 
-  it('focuses and dims from the map', () => {
-    act(() => {
+  it('focuses and dims from the map', async () => {
+    await act(async () => {
       map.fire('mousemove', 'stages-hit-day-1', { features: [{ id: 'cherryville-plus' }] })
     })
     expect(card('SS4')).toHaveClass('is-focused')
@@ -101,13 +104,19 @@ describe('day view', () => {
     await userEvent.click(card('SS4'))
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('SS4')
 
-    act(() => map.fire('click', null, { defaultPrevented: false }))
+    await act(async () =>
+      map.fire('click', null, {
+        defaultPrevented: false,
+        point: { x: 10, y: 10 },
+        lngLat: { lng: 130, lat: -20 },
+      }),
+    )
     expect(card('SS4')).toHaveClass('is-normal')
   })
 
   it('keeps a selection sticky while the pointer moves over another line', async () => {
     await userEvent.click(card('SS4'))
-    act(() => {
+    await act(async () => {
       map.fire('mousemove', 'stages-hit-day-1', { features: [{ id: 'beaumont' }] })
     })
     expect(stateOf(map, 'cherryville-plus')).toMatchObject({ focused: true })

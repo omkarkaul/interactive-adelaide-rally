@@ -10,7 +10,14 @@ export function useElementSize<T extends HTMLElement>() {
     const element = ref.current
     if (!element) return
 
-    const measure = () => setSize({ width: element.clientWidth, height: element.clientHeight })
+    // Bail on an unchanged box: setState with a fresh object always re-renders,
+    // and the first measurement usually matches the initial zero.
+    const measure = () =>
+      setSize((current) =>
+        current.width === element.clientWidth && current.height === element.clientHeight
+          ? current
+          : { width: element.clientWidth, height: element.clientHeight },
+      )
     measure()
 
     if (typeof ResizeObserver === 'undefined') return

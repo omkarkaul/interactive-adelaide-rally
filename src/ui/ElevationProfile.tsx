@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useRef, type KeyboardEvent } from 'react'
 import { sampleAtDistance } from '../domain/profile'
 import type { Cursor, Profile, StageCode } from '../domain/types'
 import { gradeColor } from './grade'
@@ -17,6 +17,7 @@ interface Props {
 
 export function ElevationProfile({ code, profile, cursor, onCursor }: Props) {
   const [ref, { width }] = useElementSize<HTMLDivElement>()
+  const dragging = useRef(false)
 
   const plotWidth = Math.max(0, width - PAD.left - PAD.right)
   const plotHeight = HEIGHT - PAD.top - PAD.bottom
@@ -75,17 +76,73 @@ export function ElevationProfile({ code, profile, cursor, onCursor }: Props) {
 
   const active = cursor?.code === code ? sampleAtDistance(profile, cursor.distanceKm) : null
 
+  const step = useCallback(
+    (deltaKm: number) => {
+      const from = active?.distanceKm ?? 0
+      const distanceKm = Math.min(profile.lengthKm, Math.max(0, from + deltaKm))
+      onCursor({ code, distanceKm })
+    },
+    [active, code, profile.lengthKm, onCursor],
+  )
+
+  const onKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      const coarse = event.shiftKey ? 10 : 1
+      const nudge = (profile.lengthKm / 100) * coarse
+      const moves: Record<string, () => void> = {
+        ArrowRight: () => step(nudge),
+        ArrowUp: () => step(nudge),
+        ArrowLeft: () => step(-nudge),
+        ArrowDown: () => step(-nudge),
+        Home: () => onCursor({ code, distanceKm: 0 }),
+        End: () => onCursor({ code, distanceKm: profile.lengthKm }),
+        Escape: () => onCursor(null),
+      }
+      const move = moves[event.key]
+      if (!move) return
+      event.preventDefault()
+      move()
+    },
+    [code, profile.lengthKm, step, onCursor],
+  )
+
+  const readout = active
+    ? `${active.distanceKm.toFixed(2)} km · ${Math.round(active.elevationM)} m · ${active.gradePct >= 0 ? '+' : ''}${active.gradePct.toFixed(1)}%`
+    : 'Hover, drag or use the arrow keys to read distance, elevation and grade.'
+
   return (
     <div className="profile" ref={ref}>
       <svg
         className="profile__svg"
         width={width}
         height={HEIGHT}
-        role="img"
+        tabIndex={0}
+        role="slider"
         aria-label={`Elevation profile for ${code}: ${profile.lengthKm.toFixed(1)} kilometres, ${Math.round(profile.climbM)} metres of climbing`}
+        aria-valuemin={0}
+        aria-valuemax={Number(profile.lengthKm.toFixed(2))}
+        aria-valuenow={Number((active?.distanceKm ?? 0).toFixed(2))}
+        aria-valuetext={readout}
+        onKeyDown={onKeyDown}
         onPointerMove={(event) => pointerToCursor(event.clientX, event.currentTarget)}
-        onPointerDown={(event) => pointerToCursor(event.clientX, event.currentTarget)}
-        onPointerLeave={() => onCursor(null)}
+        onPointerDown={(event) => {
+          // Capture so a drag keeps scrubbing past the edge of the plot;
+          // touch-action: none on the wrapper stops the page stealing the gesture.
+          dragging.current = true
+          event.currentTarget.setPointerCapture?.(event.pointerId)
+          pointerToCursor(event.clientX, event.currentTarget)
+        }}
+        onPointerUp={() => {
+          dragging.current = false
+        }}
+        onPointerCancel={() => {
+          dragging.current = false
+        }}
+        // Leaving clears a hover, but must not wipe the reading a finger just
+        // dragged to the edge and lifted.
+        onPointerLeave={() => {
+          if (!dragging.current) onCursor(null)
+        }}
       >
         <path className="profile__area" d={area} />
 
@@ -120,9 +177,7 @@ export function ElevationProfile({ code, profile, cursor, onCursor }: Props) {
       </svg>
 
       <p className="profile__readout" aria-live="polite">
-        {active
-          ? `${active.distanceKm.toFixed(2)} km · ${Math.round(active.elevationM)} m · ${active.gradePct >= 0 ? '+' : ''}${active.gradePct.toFixed(1)}%`
-          : 'Hover the profile or the map line to read distance, elevation and grade.'}
+        {readout}
       </p>
     </div>
   )

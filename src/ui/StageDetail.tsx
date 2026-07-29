@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { formatWindow } from '../domain/time'
 import type { Cursor, RallyYear, StageDetail as StageDetailModel } from '../domain/types'
 import { ElevationProfile } from './ElevationProfile'
@@ -21,16 +22,30 @@ function Stat({ label, value }: { label: string; value: string }) {
   )
 }
 
+const COLLAPSE_ABOVE = 8
+
+// Knotts Range names eleven intersections. On a phone that is most of a screen
+// before the reader reaches anything else.
 function List({ title, items }: { title: string; items: string[] }) {
+  const [expanded, setExpanded] = useState(false)
   if (items.length === 0) return null
+
+  const collapsed = items.length > COLLAPSE_ABOVE && !expanded
+  const shown = collapsed ? items.slice(0, COLLAPSE_ABOVE) : items
+
   return (
     <section className="detail__section">
       <h3>{title}</h3>
       <ul className="detail__chips">
-        {items.map((item) => (
+        {shown.map((item) => (
           <li key={item}>{item}</li>
         ))}
       </ul>
+      {items.length > COLLAPSE_ABOVE && (
+        <button type="button" className="detail__more" onClick={() => setExpanded(!expanded)}>
+          {collapsed ? `Show all ${items.length}` : 'Show fewer'}
+        </button>
+      )}
     </section>
   )
 }
@@ -42,6 +57,8 @@ export function StageDetail({ year, detail, cursor, onCursor, onBack }: Props) {
 
   return (
     <div className="detail">
+      {/* Sticky so the closure window stays on screen while a phone scrolls the
+          rest of the card. It is the question people came to answer. */}
       <header className="detail__header">
         <button type="button" className="detail__back" onClick={onBack}>
           ← All day {detail.day} stages
@@ -53,12 +70,9 @@ export function StageDetail({ year, detail, cursor, onCursor, onBack }: Props) {
           Day {detail.day}
           {repeatRuns && ` · runs as ${detail.runsAs.join(' and ')}`}
         </p>
-      </header>
-
-      <section className="detail__section">
-        <h3>Closure window</h3>
         <p className="detail__window">
           <span className="detail__window-clock">{formatWindow(closure)}</span>
+          <span className="detail__window-label">road closed</span>
           {!closure.confirmed && <span className="badge badge--provisional">Provisional</span>}
         </p>
         {!closure.confirmed && (
@@ -66,7 +80,7 @@ export function StageDetail({ year, detail, cursor, onCursor, onBack }: Props) {
             The organisers state that closure times for this day are yet to be confirmed.
           </p>
         )}
-      </section>
+      </header>
 
       {profile && (
         <section className="detail__section">

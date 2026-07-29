@@ -82,5 +82,15 @@ export function cursorFromPoint(
 }
 
 export function pointFromCursor(line: Feature<LineString>, cursor: Cursor): Position {
+  const coordinates = line.geometry.coordinates
+  if (coordinates.length === 0) return [0, 0]
+
+  // turf's `along` walks off the end of the coordinate array when asked for a
+  // distance at or past the line's length, which the End key and a drag past
+  // the right edge of the profile both produce.
+  const total = cumulativeDistancesKm(coordinates).at(-1)!
+  if (!Number.isFinite(cursor.distanceKm) || cursor.distanceKm <= 0) return coordinates[0]
+  if (cursor.distanceKm >= total) return coordinates[coordinates.length - 1]
+
   return along(line, cursor.distanceKm, { units: 'kilometers' }).geometry.coordinates
 }

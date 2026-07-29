@@ -75,6 +75,8 @@ export function RallyMap({
   cursorRef.current = cursor
   const onCursorRef = useRef(onCursor)
   onCursorRef.current = onCursor
+  const detailRef = useRef(detail)
+  detailRef.current = detail
 
   // featureId -> the stage code the map reports when that line is touched.
   // Repeat runs share a line, so the earliest run in the day owns the pointer.
@@ -143,8 +145,28 @@ export function RallyMap({
       instance.addLayer(detailArrowLayer())
       instance.addLayer(cursorLayer())
 
+      // Touch never fires mousemove, so a tap is what places the cursor on a
+      // phone. A tap near the open stage's line places it; anywhere else clears
+      // the selection, which is the same gesture as clicking off on a desktop.
       instance.on('click', (event) => {
-        if (!event.defaultPrevented) handlers.current.onSelect(null)
+        if (event.defaultPrevented) return
+
+        const open = detailRef.current
+        if (open) {
+          const next = cursorFromPoint(
+            open.code,
+            open.line,
+            [event.lngLat.lng, event.lngLat.lat],
+            cursorRef.current,
+          )
+          const projected = instance.project(pointFromCursor(open.line, next) as [number, number])
+          if (Math.hypot(projected.x - event.point.x, projected.y - event.point.y) <= CURSOR_TOLERANCE_PX) {
+            onCursorRef.current(next)
+            return
+          }
+        }
+
+        handlers.current.onSelect(null)
       })
 
       setReady(true)

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useReducer, useState } from 'react'
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { loadYear } from './domain/load'
 import { availableYears } from './domain/registry'
 import { focusReducer, NO_FOCUS } from './domain/focus'
@@ -12,9 +12,28 @@ import { StageDetail } from './ui/StageDetail'
 import { ClosureGantt } from './ui/ClosureGantt'
 import { TimeScrubber } from './ui/TimeScrubber'
 import { SafetyNotice, SourceNotice } from './ui/SafetyNotice'
+import { parseUrlState, toSearch } from './url'
 import type { Cursor, RallyYear, StageCode } from './domain/types'
 
 const PANEL_WIDTH = 360
+const NARROW = '(max-width: 860px)'
+
+function useIsNarrow(): boolean {
+  const [narrow, setNarrow] = useState(
+    () => typeof matchMedia !== 'undefined' && matchMedia(NARROW).matches,
+  )
+
+  useEffect(() => {
+    if (typeof matchMedia === 'undefined') return
+    const query = matchMedia(NARROW)
+    const update = () => setNarrow(query.matches)
+    update()
+    query.addEventListener('change', update)
+    return () => query.removeEventListener('change', update)
+  }, [])
+
+  return narrow
+}
 
 // The scrubber starts on the clock if the user is looking during the event, and
 // otherwise on the first road to close that day.
@@ -32,19 +51,46 @@ export function liveMinutes(dayDate: string, now: Date): number | null {
   return today === dayDate ? minutesOfDay(now) : null
 }
 
-export default function App() {
+interface AppProps {
+  // Taken as arguments rather than read off the global so the app can be
+  // mounted repeatedly in one document without inheriting the last mount's URL.
+  search?: string
+  persistUrl?: boolean
+}
+
+export default function App({
+  search: initialSearch = window.location.search,
+  persistUrl = true,
+}: AppProps = {}) {
+  const initial = useMemo(() => parseUrlState(initialSearch), [initialSearch])
+  const narrow = useIsNarrow()
+
   const [year, setYear] = useState<RallyYear | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [day, setDay] = useState(1)
-  const [focus, dispatch] = useReducer(focusReducer, NO_FOCUS)
+  const [day, setDay] = useState(initial.day ?? 1)
+  const [focus, dispatch] = useReducer(
+    focusReducer,
+    initial.stage ? ({ kind: 'selected', code: initial.stage } as const) : NO_FOCUS,
+  )
   const [minutes, setMinutes] = useState<number | null>(null)
   const [cursor, setCursor] = useState<Cursor | null>(null)
+  const restoredTime = useRef(initial.minutes)
 
   useEffect(() => {
-    loadYear(availableYears()[0])
+    const years = availableYears()
+    const wanted = initial.year && years.includes(initial.year) ? initial.year : years[0]
+    loadYear(wanted)
       .then(setYear)
       .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)))
-  }, [])
+  }, [initial.year])
+
+  // A day from the URL that the loaded year does not have would leave the app
+  // with no closure envelope and nothing to render, so it falls back.
+  useEffect(() => {
+    if (year && !year.event.days.some((d) => d.dayNumber === day)) {
+      setDay(year.event.days[0].dayNumber)
+    }
+  }, [year, day])
 
   const envelope = useMemo(
     () => (year ? envelopeOf(closuresForDay(year, day)) : null),
@@ -57,7 +103,13 @@ export default function App() {
   }, [year, day])
 
   useEffect(() => {
-    if (envelope) setMinutes(initialMinutes(envelope, liveNow))
+    if (!envelope) return
+    // A time in the URL wins once, on first load; day changes then rebase normally.
+    const restored = restoredTime.current
+    restoredTime.current = null
+    setMinutes(
+      restored === null ? initialMinutes(envelope, liveNow) : clampToWindow(restored, envelope),
+    )
   }, [envelope, liveNow])
 
   // The selected stage is the detail view: one selection, one place to look.
@@ -83,6 +135,21 @@ export default function App() {
 
   const onBack = useCallback(() => dispatch({ type: 'clear' }), [])
 
+  // replaceState, not pushState: scrubbing time would otherwise bury the back
+  // button under hundreds of entries.
+  useEffect(() => {
+    if (!persistUrl || !year || minutes === null) return
+    const search = toSearch({
+      year: year.event.year,
+      day,
+      stage: focus.kind === 'selected' ? focus.code : null,
+      minutes,
+    })
+    if (search !== window.location.search) {
+      window.history.replaceState(null, '', `${window.location.pathname}${search}`)
+    }
+  }, [persistUrl, year, day, focus, minutes])
+
   if (error) {
     return (
       <div className="app app--message" role="alert">
@@ -100,7 +167,7 @@ export default function App() {
   }
 
   return (
-    <div className="app">
+    <div className={narrow ? 'app is-narrow' : 'app'}>
       <header className="app__header">
         <div className="app__title">
           <h1>{year.event.name}</h1>
@@ -110,7 +177,7 @@ export default function App() {
       </header>
 
       <main className="app__body">
-        <aside className="app__panel" style={{ width: PANEL_WIDTH }}>
+        <aside className="app__panel">
           {detail ? (
             <StageDetail
               year={year}
@@ -145,7 +212,7 @@ export default function App() {
             minutes={minutes}
             onHover={onHover}
             onSelect={onSelect}
-            panelWidth={PANEL_WIDTH}
+            panelWidth={narrow ? 0 : PANEL_WIDTH}
             detail={detail}
             cursor={cursor}
             onCursor={setCursor}

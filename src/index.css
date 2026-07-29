@@ -12,6 +12,7 @@
   --closed: #e5484d;
   --ok: #3ddc84;
   --radius: 8px;
+  --panel-width: 360px;
 
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-synthesis: none;
@@ -83,6 +84,7 @@ a {
 .app__panel {
   display: flex;
   flex-direction: column;
+  width: var(--panel-width);
   min-height: 0;
   background: var(--bg-sunken);
   border-right: 1px solid var(--border);
@@ -408,6 +410,16 @@ a {
   color: var(--text);
 }
 
+.detail__header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin: -12px -14px 0;
+  padding: 10px 14px 8px;
+  background: var(--bg-sunken);
+  border-bottom: 1px solid var(--border);
+}
+
 .detail__header h2 {
   margin: 6px 0 2px;
   font-size: 18px;
@@ -447,14 +459,39 @@ a {
 
 .detail__window {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 8px;
+  margin: 6px 0 0 !important;
 }
 
 .detail__window-clock {
   font-size: 20px;
   font-weight: 650;
   font-variant-numeric: tabular-nums;
+}
+
+.detail__window-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.detail__more {
+  margin-top: 6px;
+  padding: 3px 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-dim);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+}
+
+.detail__more:hover {
+  color: var(--text);
+  border-color: #3a4050;
 }
 
 .detail__caveat {
@@ -640,4 +677,87 @@ a {
 
 .maplibregl-ctrl-attrib {
   font-size: 10px;
+}
+
+/* Focus visibility */
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Narrow screens: map on top, stage list as a bottom sheet */
+
+@media (max-width: 860px) {
+  .app__header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .day-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .app__body {
+    flex-direction: column-reverse;
+  }
+
+  .app__panel {
+    width: 100%;
+    max-height: 52vh;
+    border-right: none;
+    border-top: 1px solid var(--border);
+    border-radius: 12px 12px 0 0;
+  }
+
+  .app__map {
+    flex: 1 1 40vh;
+    min-height: 200px;
+  }
+
+  .detail__header {
+    margin-top: -12px;
+  }
+
+  .app__time {
+    padding: 8px 12px calc(10px + env(safe-area-inset-bottom));
+  }
+
+  .scrubber {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .scrubber__label {
+    order: -1;
+    flex-basis: 100%;
+  }
+
+  /* Coarse pointers need a bigger target than a 12px range thumb. */
+  .scrubber__input {
+    height: 32px;
+  }
+
+  .stage-card {
+    padding: 12px;
+  }
+}
+
+@media (pointer: coarse) {
+  .stage-card,
+  .day-tab,
+  .detail__back,
+  .detail__more,
+  .scrubber__now {
+    min-height: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-card {
+    transition: none;
+  }
 }
