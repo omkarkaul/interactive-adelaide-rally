@@ -1,0 +1,108 @@
+{
+  "year": 2026,
+  "sources": [
+    {
+      "mid": "1Afv-5RMTbEXqJNsyUOICNB-Ts7k_294",
+      "url": "https://www.google.com/maps/d/kml?mid=1Afv-5RMTbEXqJNsyUOICNB-Ts7k_294&forcekml=1",
+      "fetchedAt": "2026-07-29T07:33:41.773Z",
+      "sha256": "3f43d6e9196eff2fd9013b42998486d9cc24f6cfd395e3757390bf6b5e0359d5",
+      "documentName": "2026 Shannons Adelaide Rally Day 1"
+    },
+    {
+      "mid": "1xpCx2cH8NgllswJUHqF5qYiHQx8LYPg",
+      "url": "https://www.google.com/maps/d/kml?mid=1xpCx2cH8NgllswJUHqF5qYiHQx8LYPg&forcekml=1",
+      "fetchedAt": "2026-07-29T07:33:42.344Z",
+      "sha256": "788d1c0525abb20225dc1efc16e62b2cccee50ec10de7ef96108264fd273d25f",
+      "documentName": "2026 Shannons Adelaide Rally Day 2"
+    },
+    {
+      "mid": "1G00Y3xegPVNWTDaunvk_IWY_Kec0lLQ",
+      "url": "https://www.google.com/maps/d/kml?mid=1G00Y3xegPVNWTDaunvk_IWY_Kec0lLQ&forcekml=1",
+      "fetchedAt": "2026-07-29T07:33:42.888Z",
+      "sha256": "99dea511cca588ea0fbc586bf24f8ffad4fa4af078201620ae0bc384c14655ce",
+      "documentName": "2026 Shannons Adelaide Rally Day 3"
+    },
+    {
+      "mid": "1t-o-bkXJ-oGyjRwyu4S2vuZSSTRudYDd",
+      "url": "https://www.google.com/maps/d/kml?mid=1t-o-bkXJ-oGyjRwyu4S2vuZSSTRudYDd&forcekml=1",
+      "fetchedAt": "2026-07-29T07:33:43.714Z",
+      "sha256": "b31857d19b08ee1bb8886be44144ad0618504de9e51162c138bc08934a109057",
+      "documentName": "DAY 1 Shannons Adelaide Rally"
+    },
+    {
+      "mid": "1knso66fdXIxKfe8d3tBXOxI4yW7XhGU3",
+      "url": "https://www.google.com/maps/d/kml?mid=1knso66fdXIxKfe8d3tBXOxI4yW7XhGU3&forcekml=1",
+      "fetchedAt": "2026-07-29T07:33:44.261Z",
+      "sha256": "732161b435d4b81fbbf65c029720b4e6fa736b2335e16762c1c5e16e228e6a71",
+      "documentName": "DAY 2 Shannons Adelaide Rally"
+    },
+    {
+      "mid": "1Io0-kvxO3FFKarmYcScnLz31c3cs80M",
+      "url": "https://www.google.com/maps/d/kml?mid=1Io0-kvxO3FFKarmYcScnLz31c3cs80M&forcekml=1",
+      "fetchedAt": "2026-07-29T07:33:44.886Z",
+      "sha256": "ccf59e0e37404cdfe2a2dad5243de384ceeffe39a436d09e46385aa1440b29c2",
+      "documentName": "2026 Gorge Rallysprint"
+    }
+  ],
+  "roles": {
+    "1Afv-5RMTbEXqJNsyUOICNB-Ts7k_294": {
+      "key": "day-1",
+      "day": 1,
+      "note": "SS1–SS11"
+    },
+    "1xpCx2cH8NgllswJUHqF5qYiHQx8LYPg": {
+      "key": "day-2",
+      "day": 2,
+      "note": "SS12–SS22"
+    },
+    "1G00Y3xegPVNWTDaunvk_IWY_Kec0lLQ": {
+      "key": "day-3",
+      "day": 3,
+      "note": "SS23–SS30"
+    },
+    "1t-o-bkXJ-oGyjRwyu4S2vuZSSTRudYDd": {
+      "key": "ss4-standalone",
+      "day": null,
+      "note": "Linked from /route as the SS4 tile; document is a prior-year Day 1 with different stage numbering"
+    },
+    "1knso66fdXIxKfe8d3tBXOxI4yW7XhGU3": {
+      "key": "ss29-tile",
+      "day": null,
+      "note": "Linked from /route under Day 2; document is a prior-year Day 2 with different stage numbering"
+    },
+    "1Io0-kvxO3FFKarmYcScnLz31c3cs80M": {
+      "key": "gorge-rallysprint",
+      "day": null,
+      "note": "Separate event, out of scope for v1"
+    }
+  },
+  "notes": {
+    "duplicates": [],
+    "parked": [
+      "ss4-standalone: beaumont [SS1] \"SS1 Beaumont\"",
+      "ss4-standalone: eagle-on-the-hill [SS2] \"SS2 EAGLE ON THE HILL\"",
+      "ss4-standalone: cleland [SS3,SS9] \"SS3 & SS9 CLELAND 1 & 2\"",
+      "ss4-standalone: cherryville-plus [SS4,SS7] \"SS4 & SS7 CHERRYVILLE PLUS 1 & 2\"",
+      "ss4-standalone: vista [SS5,SS11] \"SS5 & SS11 VISTA 1 & ANSTEY HILL\"",
+      "ss4-standalone: norton-summit [SS6,SS10] \"SS6 Norton Summit & SS10 Teringie\"",
+      "ss4-standalone: stafford-hillclimb [SS8] \"SS8 STAFFORD HILLCLIMB\"",
+      "ss29-tile: hermitage [SS12] \"SS12 HERMITAGE\"",
+      "ss29-tile: chain-of-ponds [SS13,SS17] \"SS13 CHAIN OF PONDS & SS17 MILLBROOK\"",
+      "ss29-tile: corkscrew-plus [SS14] \"SS14 CORKSCREW PLUS\"",
+      "ss29-tile: old-norton-summit [SS15,SS19] \"SS15 & SS19 OLD NORTON SUMMIT 1 & 2\"",
+      "ss29-tile: forest-range [SS16] \"SS16 FOREST RANGE\"",
+      "ss29-tile: vista-2 [SS18] \"SS18 VISTA 2\"",
+      "ss29-tile: leawood-gardens [SS21] \"SS21 LEAWOOD GARDENS\"",
+      "ss29-tile: wairoa [SS20] \"SS20 WAIROA\"",
+      "ss29-tile: windy-point [SS22] \"SS22 WINDY POINT\"",
+      "gorge-rallysprint: vista [SS1,SS5] \"SS1 & SS5 Vista 1 & 2\"",
+      "gorge-rallysprint: pinkerton-gully [SS2,SS6] \"SS2 & SS6 Pinkerton Gully 1 & 2\"",
+      "gorge-rallysprint: paracombe [SS3,SS7] \"SS3 & SS7 Paracombe 1 & 2\"",
+      "gorge-rallysprint: prairie [SS4,SS8] \"SS4 & SS8 Prairie 1 & 2\"",
+      "gorge-rallysprint: karrawirra [SS9] \"SS9 Karrawirra\"",
+      "gorge-rallysprint: kangaroo-creek [SS10] \"SS10 Kangaroo Creek\"",
+      "gorge-rallysprint: athlestone [SS11] \"SS11 Athlestone\"",
+      "gorge-rallysprint: anstey-hill [SS12] \"SS12 Anstey Hill\""
+    ]
+  }
+}

@@ -1,0 +1,435 @@
+{
+  "event": {
+    "year": 2026,
+    "name": "2026 Shannons Adelaide Rally",
+    "days": [
+      { "dayNumber": 1, "date": "2026-10-16", "label": "Day 1 — Friday 16 October" },
+      { "dayNumber": 2, "date": "2026-10-17", "label": "Day 2 — Saturday 17 October" },
+      { "dayNumber": 3, "date": "2026-10-18", "label": "Day 3 — Sunday 18 October" }
+    ]
+  },
+  "stages": [
+    { "code": "SS1", "name": "Beaumont", "day": 1, "order": 1, "spectator": false, "featureId": "beaumont", "closureId": "d1-beaumont" },
+    { "code": "SS2", "name": "Carey Gully", "day": 1, "order": 2, "spectator": false, "featureId": "carey-gully", "closureId": "d1-carey-gully" },
+    { "code": "SS3", "name": "Knotts Hill", "day": 1, "order": 3, "spectator": false, "featureId": "knotts-hill", "closureId": "d1-knotts-hill" },
+    { "code": "SS4", "name": "Cherryville Plus 1", "day": 1, "order": 4, "spectator": false, "featureId": "cherryville-plus", "closureId": "d1-cherryville-plus" },
+    { "code": "SS5", "name": "Vista 1", "day": 1, "order": 5, "spectator": false, "featureId": "vista-1", "closureId": "d1-vista-1" },
+    { "code": "SS6", "name": "Old Norton Summit 1", "day": 1, "order": 6, "spectator": false, "featureId": "old-norton-summit", "closureId": "d1-old-norton-summit" },
+    { "code": "SS7", "name": "Cherryville Plus 2", "day": 1, "order": 7, "spectator": false, "featureId": "cherryville-plus", "closureId": "d1-cherryville-plus" },
+    { "code": "SS8", "name": "Stafford Hillclimb", "day": 1, "order": 8, "spectator": false, "featureId": "stafford-hillclimb", "closureId": "d1-stafford-hillclimb" },
+    { "code": "SS9", "name": "Knotts Hill Short", "day": 1, "order": 9, "spectator": false, "featureId": "knotts-hill", "closureId": "d1-knotts-hill-short" },
+    { "code": "SS10", "name": "Old Norton Summit 2", "day": 1, "order": 10, "spectator": false, "featureId": "old-norton-summit", "closureId": "d1-old-norton-summit" },
+    { "code": "SS11", "name": "Summit Road", "day": 1, "order": 11, "spectator": false, "featureId": "summit-road", "closureId": "d1-summit-road" },
+
+    { "code": "SS12", "name": "Hermitage", "day": 2, "order": 1, "spectator": false, "featureId": "hermitage", "closureId": "d2-hermitage" },
+    { "code": "SS13", "name": "Chain of Ponds Long", "day": 2, "order": 2, "spectator": false, "featureId": "chain-of-ponds-long", "closureId": "d2-chain-of-ponds-long" },
+    { "code": "SS14", "name": "Black Hill", "day": 2, "order": 3, "spectator": false, "featureId": "black-hill", "closureId": "d2-black-hill" },
+    { "code": "SS15", "name": "Norton Summit 1", "day": 2, "order": 4, "spectator": false, "featureId": "norton-summit", "closureId": "d2-norton-summit" },
+    { "code": "SS16", "name": "Knotts Range", "day": 2, "order": 5, "spectator": false, "featureId": "knotts-range", "closureId": "d2-knotts-range" },
+    { "code": "SS17", "name": "Millbrook", "day": 2, "order": 6, "spectator": false, "featureId": "millbrook", "closureId": "d2-millbrook" },
+    { "code": "SS18", "name": "Vista 2", "day": 2, "order": 7, "spectator": false, "featureId": "vista-2", "closureId": "d2-vista-2" },
+    { "code": "SS19", "name": "Norton Summit 2", "day": 2, "order": 8, "spectator": false, "featureId": "norton-summit", "closureId": "d2-norton-summit" },
+    { "code": "SS20", "name": "Wairoa", "day": 2, "order": 9, "spectator": true, "featureId": "wairoa", "closureId": "d2-wairoa" },
+    { "code": "SS21", "name": "Skinny Pole", "day": 2, "order": 10, "spectator": false, "featureId": "skinny-pole", "closureId": "d2-skinny-pole" },
+    { "code": "SS22", "name": "Windy Point", "day": 2, "order": 11, "spectator": false, "featureId": "windy-point", "closureId": "d2-windy-point" },
+
+    { "code": "SS23", "name": "Mt Lofty", "day": 3, "order": 1, "spectator": false, "featureId": "mt-lofty", "closureId": "d3-mt-lofty" },
+    { "code": "SS24", "name": "Mylor", "day": 3, "order": 2, "spectator": false, "featureId": "mylor", "closureId": "d3-mylor" },
+    { "code": "SS25", "name": "Strathalbyn Town Stage 1", "day": 3, "order": 3, "spectator": true, "featureId": "strathalbyn-town-stage", "closureId": "d3-strathalbyn-town-stage" },
+    { "code": "SS26", "name": "Macclesfield 1", "day": 3, "order": 4, "spectator": false, "featureId": "macclesfield", "closureId": "d3-macclesfield" },
+    { "code": "SS27", "name": "Strathalbyn Town Stage 2", "day": 3, "order": 5, "spectator": true, "featureId": "strathalbyn-town-stage", "closureId": "d3-strathalbyn-town-stage" },
+    { "code": "SS28", "name": "Macclesfield 2", "day": 3, "order": 6, "spectator": false, "featureId": "macclesfield", "closureId": "d3-macclesfield" },
+    { "code": "SS29", "name": "Warrawong", "day": 3, "order": 7, "spectator": false, "featureId": "warrawong", "closureId": "d3-warrawong" },
+    { "code": "SS30", "name": "Manoah", "day": 3, "order": 8, "spectator": false, "featureId": "manoah", "closureId": "d3-manoah" }
+  ],
+  "closures": [
+    {
+      "id": "d1-beaumont",
+      "stageCodes": ["SS1"],
+      "roadsClosed": ["Hayward Dve"],
+      "start": "Caithness Ave & Hayward Dr",
+      "finish": "Centre Track & Hayward Dve",
+      "intersections": [],
+      "closesAt": "07:45",
+      "reopensAt": "12:45",
+      "confirmed": true,
+      "notes": []
+    },
+    {
+      "id": "d1-carey-gully",
+      "stageCodes": ["SS2"],
+      "roadsClosed": ["Greenhill Rd"],
+      "start": "Beaumont Rd & Greenhill Rd",
+      "finish": "Deviation Rd & Greenhill Rd",
+      "intersections": ["Tanahmerah Rd", "Ostigh Rd"],
+      "closesAt": "07:55",
+      "reopensAt": "12:55",
+      "confirmed": true,
+      "notes": []
+    },
+    {
+      "id": "d1-knotts-hill",
+      "stageCodes": ["SS3"],
+      "roadsClosed": ["Hunters Rd", "Knotts Hill Rd", "Pound Rd"],
+      "start": "Hunters Rd/Lobethal Rd",
+      "finish": "Pound Rd/Marble Hill Rd",
+      "intersections": ["Blockers Rd", "Burdetts Rd", "Raymonds Rd", "Osborne Rd", "Wightmans Rd"],
+      "closesAt": "08:40",
+      "reopensAt": "18:30",
+      "confirmed": true,
+      "notes": [
+        "Shares its mapped route with SS9 Knotts Hill Short. The line shown is the full-length SS3 route; the organisers publish no separate geometry for the short version."
+      ]
+    },
+    {
+      "id": "d1-cherryville-plus",
+      "stageCodes": ["SS4", "SS7"],
+      "roadsClosed": ["Marble Hill Rd", "Montacute Rd", "Corkscrew Rd", "Gorge Rd"],
+      "start": "Tembys Rd/Marble Hill Rd",
+      "finish": "Prairie Rd/Gorge Rd",
+      "intersections": [
+        "Old Cherryville Rd",
+        "Cherryville Rd",
+        "Narrow Range Rd",
+        "Hill Rd",
+        "Montacute Rd",
+        "Church Rd",
+        "Valley Rd",
+        "Gorge Rd",
+        "Batchelor Rd"
+      ],
+      "closesAt": "09:10",
+      "reopensAt": "17:10",
+      "confirmed": true,
+      "notes": []
+    },
+    {
+      "id": "d1-vista-1",
+      "stageCodes": ["SS5"],
+      "roadsClosed": ["Lower North East Rd"],
+      "start": "Range Rd Sth",
+      "finish": "Perseverance Rd",
+      "intersections": [],
+      "closesAt": "09:30",
+      "reopensAt": "15:00",
+      "confirmed": true,
+      "notes": []
+    },
+    {
+      "id": "d1-old-norton-summit",
+      "stageCodes": ["SS6", "SS10"],
+      "roadsClosed": ["Old Norton Summit Rd"],
+      "start": "Horsnells Gully Rd",
+      "finish": "Lobethal Rd",
+      "intersections": [],
+      "closesAt": "11:10",
+      "reopensAt": "18:35",
+      "confirmed": true,
+      "notes": []
+    },
+    {
+      "id": "d1-stafford-hillclimb",
+      "stageCodes": ["SS8"],
+      "roadsClosed": ["Fox Creek Rd", "Mawson Trail", "Staffords Rd"],
+      "start": "Fox Creek Bike Park Carpark",
+      "finish": "Staffords Rd ~750m from Mawson Trail",
+      "intersections": ["Croft Rd", "Coldstore Rd"],
+      "closesAt": "11:25",
+      "reopensAt": "17:40",
+      "confirmed": true,
+      "notes": []
+    },
+    {
+      "id": "d1-knotts-hill-short",
+      "stageCodes": ["SS9"],
+      "roadsClosed": ["Hunters Rd", "Knotts Hill Rd", "Pound Rd"],
+      "start": "Hunters Rd/Lobethal Rd",
+      "finish": "Pound Rd/Marble Hill Rd",
+      "intersections": ["Blockers Rd", "Burdetts Rd"],
+      "closesAt": "08:40",
+      "reopensAt": "18:30",
+      "confirmed": true,
+      "notes": [
+        "Shares its mapped route with SS3 Knotts Hill. The line shown is the full-length SS3 route, not the shortened SS9 course."
+      ]
+    },
+    {
+      "id": "d1-summit-road",
+      "stageCodes": ["SS11"],
+      "roadsClosed": ["Mt Lofty Summit Rd"],
+      "start": "Greenhill Rd",
+      "finish": "Cleland Wildlife Park Entry",
+      "intersections": [],
+      "closesAt": "13:40",
+      "reopensAt": "19:10",
+      "confirmed": true,
+      "notes": []
+    },
+
+    {
+      "id": "d2-hermitage",
+      "stageCodes": ["SS12"],
+      "roadsClosed": ["Range Rd North", "Seaview Rd", "One Tree Hill Rd"],
+      "start": "Verrall Rd (North)",
+      "finish": "Hannaford Hump Rd",
+      "intersections": ["One Tree Hill Rd", "Seaview Rd"],
+      "closesAt": "07:45",
+      "reopensAt": "13:30",
+      "confirmed": false,
+      "notes": []
+    },
+    {
+      "id": "d2-chain-of-ponds-long",
+      "stageCodes": ["SS13"],
+      "roadsClosed": ["North East Rd", "Tippett Rd"],
+      "start": "Fiddlers Hill Rd",
+      "finish": "Gorge Rd",
+      "intersections": ["Ballans Rd", "Millbrook Rd", "Tippett Rd", "Sunninghill Rd"],
+      "closesAt": "08:15",
+      "reopensAt": "13:20",
+      "confirmed": false,
+      "notes": ["Overlaps SS17 Millbrook. The organisers flag this overlap explicitly."]
+    },
+    {
+      "id": "d2-black-hill",
+      "stageCodes": ["SS14"],
+      "roadsClosed": ["Corkscrew Rd", "Montacute Rd"],
+      "start": "Corkscrew Rd",
+      "finish": "Black Hill Conservation Park Entry",
+      "intersections": ["Montacute Rd", "Institute Rd", "Smiths Gully Rd"],
+      "closesAt": "08:30",
+      "reopensAt": "14:15",
+      "confirmed": false,
+      "notes": ["The finish point remains open to the public."]
+    },
+    {
+      "id": "d2-norton-summit",
+      "stageCodes": ["SS15", "SS19"],
+      "roadsClosed": ["(New) Norton Summit Rd"],
+      "start": "Coach House Dr",
+      "finish": "Lobethal Rd",
+      "intersections": ["Teringie Dr", "Valley Dr", "Ridgeland Dr"],
+      "closesAt": "08:45",
+      "reopensAt": "18:00",
+      "confirmed": false,
+      "notes": []
+    },
+    {
+      "id": "d2-knotts-range",
+      "stageCodes": ["SS16"],
+      "roadsClosed": ["Pound Rd", "Knotts Hill Rd", "Hunters Rd", "Lobethal Rd", "Deviation Rd"],
+      "start": "Marble Hill Rd",
+      "finish": "Boundary Dr (South)",
+      "intersections": [
+        "Wightmans Rd",
+        "Osborne Rd",
+        "Raymonds Rd",
+        "Burdetts Rd",
+        "Blockers Rd",
+        "Lobethal Rd",
+        "Steer Rd",
+        "Mawson Rd",
+        "Deviation Rd",
+        "Boundary Dr",
+        "Kneen Ln"
+      ],
+      "closesAt": "10:45",
+      "reopensAt": "16:30",
+      "confirmed": false,
+      "notes": []
+    },
+    {
+      "id": "d2-millbrook",
+      "stageCodes": ["SS17"],
+      "roadsClosed": ["Tippett Rd", "North East Rd"],
+      "start": "Gorge Rd",
+      "finish": "Millbrook Rd",
+      "intersections": ["North East Rd"],
+      "closesAt": "08:15",
+      "reopensAt": "17:00",
+      "confirmed": false,
+      "notes": ["Overlaps SS13 Chain of Ponds Long."]
+    },
+    {
+      "id": "d2-vista-2",
+      "stageCodes": ["SS18"],
+      "roadsClosed": ["Lower North East Rd"],
+      "start": "Range Rd South",
+      "finish": "Perseverance Rd",
+      "intersections": [],
+      "closesAt": "11:45",
+      "reopensAt": "17:15",
+      "confirmed": false,
+      "notes": []
+    },
+    {
+      "id": "d2-wairoa",
+      "stageCodes": ["SS20"],
+      "roadsClosed": ["Mount Barker Rd"],
+      "start": "Kingsland Rd",
+      "finish": "Snows Rd",
+      "intersections": ["Euston Rd", "Kemp Rd", "Arkaba Rd", "Glades Ln"],
+      "closesAt": "12:15",
+      "reopensAt": "19:30",
+      "confirmed": false,
+      "notes": [
+        "Sub-window: Mount Barker Rd between Kingsland Rd and Euston Rd is closed 13:30–18:00."
+      ]
+    },
+    {
+      "id": "d2-skinny-pole",
+      "stageCodes": ["SS21"],
+      "roadsClosed": ["Pole Rd"],
+      "start": "Learmonth Ct",
+      "finish": "Upper Sturt Rd",
+      "intersections": [],
+      "closesAt": "13:15",
+      "reopensAt": "17:45",
+      "confirmed": false,
+      "notes": []
+    },
+    {
+      "id": "d2-windy-point",
+      "stageCodes": ["SS22"],
+      "roadsClosed": ["Belair Rd"],
+      "start": "Cornish Ct",
+      "finish": "Culley Ave",
+      "intersections": ["Kalyra Rd", "Marina Ave", "Aerial Rd", "Briar Grove"],
+      "closesAt": "14:15",
+      "reopensAt": "18:00",
+      "confirmed": false,
+      "notes": []
+    },
+
+    {
+      "id": "d3-mt-lofty",
+      "stageCodes": ["SS23"],
+      "roadsClosed": ["Greenhill Rd", "Mt Lofty Summit Rd"],
+      "start": "661 Greenhill Rd",
+      "finish": "Cleland Wildlife Park Entry",
+      "intersections": ["Quintin Ave", "Yarrabee Rd", "Yanagin Rd", "Sprigg Rd", "Gores Rd"],
+      "closesAt": "08:00",
+      "reopensAt": "13:30",
+      "confirmed": false,
+      "notes": []
+    },
+    {
+      "id": "d3-mylor",
+      "stageCodes": ["SS24"],
+      "roadsClosed": ["Forbes Rd", "Aldgate Valley Rd"],
+      "start": "Emery Rd",
+      "finish": "Stock Rd & Aldgate Valley Rd",
+      "intersections": [
+        "Williams Rd",
+        "Aldgate Valley Rd",
+        "Shanks Rd",
+        "Blackwood Ln",
+        "Kiley Rd",
+        "Stevens Ln",
+        "Mi Mi Rd",
+        "Nation Ridge Rd"
+      ],
+      "closesAt": "08:15",
+      "reopensAt": "17:30",
+      "confirmed": false,
+      "notes": [
+        "SS29 Warrawong runs these same roads in the opposite direction across an identical window."
+      ]
+    },
+    {
+      "id": "d3-strathalbyn-town-stage",
+      "stageCodes": ["SS25", "SS27"],
+      "roadsClosed": [
+        "Commercial Rd",
+        "Albyn Tce",
+        "Catherine St",
+        "Donald St",
+        "Rankine St",
+        "Sunter St"
+      ],
+      "start": "North Parade",
+      "finish": "Grey St",
+      "intersections": [
+        "Donald St",
+        "Catherine St",
+        "Rankine St",
+        "Albyn Tce",
+        "Alfred Pl",
+        "River Ln",
+        "Swale St"
+      ],
+      "closesAt": "08:00",
+      "reopensAt": "18:00",
+      "confirmed": false,
+      "notes": [
+        "Sub-window: Albyn Terrace between Dawson St and 23 Albyn Terrace is closed 08:00–13:00.",
+        "Source defect: the organisers' closures page labels both SS25 and SS27 \"Strathalbyn Town Stage 1\". SS27 is stage 2."
+      ]
+    },
+    {
+      "id": "d3-macclesfield",
+      "stageCodes": ["SS26", "SS28"],
+      "roadsClosed": ["Strathalbyn Rd"],
+      "start": "Waterman Rd",
+      "finish": "Cosgrove Rd",
+      "intersections": ["Nyoka Rd"],
+      "closesAt": "09:00",
+      "reopensAt": "17:30",
+      "confirmed": false,
+      "notes": []
+    },
+    {
+      "id": "d3-warrawong",
+      "stageCodes": ["SS29"],
+      "roadsClosed": ["Aldgate Valley Rd", "Forbes Rd"],
+      "start": "Stock Rd",
+      "finish": "Emery Rd",
+      "intersections": [
+        "Nation Ridge Rd",
+        "Mi Mi Rd",
+        "Stevens Ln",
+        "Kiley Rd",
+        "Blackwood Ln",
+        "Shanks Rd",
+        "Aldgate Valley Rd",
+        "Williams Rd"
+      ],
+      "closesAt": "08:15",
+      "reopensAt": "17:30",
+      "confirmed": false,
+      "notes": [
+        "SS24 Mylor reversed — same roads, start and finish swapped, identical closure window.",
+        "Source defect: the organisers' /route page files SS29 under Day 2. The closures page lists it as Day 3, which is treated as authoritative here."
+      ]
+    },
+    {
+      "id": "d3-manoah",
+      "stageCodes": ["SS30"],
+      "roadsClosed": ["Sturt Valley Rd"],
+      "start": "Longwood Dr",
+      "finish": "Elmstead Dr",
+      "intersections": ["Heather Rd", "Ironbank Rd", "Whitewood Dr", "Manoah Dr", "Wychwood Gr"],
+      "closesAt": "12:30",
+      "reopensAt": "17:45",
+      "confirmed": false,
+      "notes": []
+    }
+  ],
+  "spectators": {
+    "SS20": {
+      "name": "Wairoa spectator stage",
+      "url": "https://www.adelaiderally.com.au/wairoa",
+      "description": "Signposted spectator point on the Wairoa stage. Access, parking and viewing areas are set by the organisers on the day."
+    },
+    "SS25": {
+      "name": "Strathalbyn spectator stage",
+      "url": "https://www.adelaiderally.com.au/strathalbyn",
+      "description": "Town-centre street stage with organiser-managed spectator areas. Both runs use the same closure."
+    },
+    "SS27": {
+      "name": "Strathalbyn spectator stage",
+      "url": "https://www.adelaiderally.com.au/strathalbyn",
+      "description": "Town-centre street stage with organiser-managed spectator areas. Both runs use the same closure."
+    }
+  }
+}
