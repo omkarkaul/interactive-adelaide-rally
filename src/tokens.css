@@ -31,6 +31,10 @@
   --notice-bg: #2a1416;
   --notice-text: #ffb3b5;
 
+  /* Shared by ClosureGantt's scale and the scrubber's track indent. If these two
+     disagree the now-line no longer sits under the thumb. */
+  --gantt-gutter: 78px;
+
   --radius-control: 8px;
   --radius-sheet: 14px;
   --radius-bar: 3px;

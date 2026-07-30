@@ -343,6 +343,48 @@ a {
   border-top: 1px solid var(--border);
 }
 
+/* With a stage open there are no bars to align the track against, so the whole
+   control folds onto one row and gives the height back to the detail view. */
+.app__time.is-compact {
+  padding: 5px 16px;
+}
+
+/* Clipped rather than display:none — the label is the slider's accessible name,
+   and the readout beside it already says what the control is. */
+.app__time.is-compact .scrubber__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.app__time.is-compact .scrubber {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+/* After the track, not before it — leading the row with "07:45" made the current
+   time read as the scale's minimum. */
+.app__time.is-compact .scrubber__bar {
+  order: 1;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.app__time.is-compact .scrubber__input {
+  flex: 1 1 auto;
+  width: auto;
+  margin: 0;
+}
+
+.app__time.is-compact .scrubber__readout {
+  margin-left: 0;
+  order: 1;
+}
+
 .scrubber {
   display: flex;
   flex-direction: column;
@@ -362,12 +404,13 @@ a {
   letter-spacing: 0.04em;
 }
 
-/* Full width and zero margin so the thumb travels exactly the span the Gantt
-   draws across; ClosureGantt insets its scale by half a thumb to match. */
+/* The thumb must travel exactly the span the Gantt plots across, so the input is
+   indented by the same label gutter and ClosureGantt insets its scale by half a
+   thumb on top of that. Change one of these three and the now-line drifts. */
 .scrubber__input {
   display: block;
-  width: 100%;
-  margin: 0;
+  width: calc(100% - var(--gantt-gutter));
+  margin: 0 0 0 var(--gantt-gutter);
   accent-color: var(--accent);
 }
 
@@ -433,6 +476,47 @@ a {
   font-variant-numeric: tabular-nums;
 }
 
+.gantt__legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  margin: 6px 0 0;
+  padding: 0 0 0 var(--gantt-gutter);
+  list-style: none;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.gantt__legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gantt__key {
+  width: 22px;
+  height: 8px;
+  border-radius: var(--radius-bar);
+}
+
+.gantt__key--pending {
+  background: var(--state-pending);
+}
+
+.gantt__key--closed {
+  background: var(--state-closed);
+}
+
+.gantt__key--reopened {
+  border: 1px dashed var(--state-reopened);
+}
+
+.gantt__legend-note {
+  margin-left: auto;
+  font-style: italic;
+}
+
 .gantt__row {
   cursor: pointer;
 }
@@ -452,9 +536,13 @@ a {
 
 .gantt__bar-label {
   fill: var(--text-secondary);
-  font-size: 10px;
-  font-weight: 700;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
   pointer-events: none;
+}
+
+.gantt__row.is-focused .gantt__bar-label {
+  fill: var(--text-primary);
 }
 
 .gantt__now {
@@ -802,9 +890,14 @@ a {
     padding: 8px 12px calc(10px + env(safe-area-inset-bottom));
   }
 
-  /* Coarse pointers need a bigger target than a 12px range thumb. */
+  /* Coarse pointers need a bigger target than a 12px range thumb. The compact
+     bar keeps that 32px target and gives up its padding instead. */
   .scrubber__input {
     height: 32px;
+  }
+
+  .app__time.is-compact {
+    padding-block: 3px;
   }
 
   .stage-card {

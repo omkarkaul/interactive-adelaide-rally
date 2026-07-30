@@ -13,6 +13,12 @@ const AXIS_HEIGHT = 18
 const MIN_TICK_GAP_PX = 46
 const CAP_PX = 4
 
+// Row labels live in a gutter rather than on top of the bars. Printed inside,
+// they made a ragged staircase, sat on fills too dark to read against, and the
+// now-line sliced straight through any label near the current time. Read from
+// the token the scrubber indents by, so the two cannot disagree.
+export const GUTTER_PX = Number.parseFloat(token('--gantt-gutter'))
+
 const STATE_COLOR: Record<ClosureState, string> = {
   pending: token('--state-pending'),
   closed: token('--state-closed'),
@@ -31,11 +37,12 @@ interface Props {
 // The Gantt and the scrubber have to share one scale, or the now-line does not
 // sit under the thumb. A native range thumb's centre travels from half a thumb
 // in to half a thumb short of the far edge, so this maps the same span.
-export function timeScale(width: number, from: number, to: number) {
-  const track = Math.max(0, width - THUMB_PX)
+export function timeScale(width: number, from: number, to: number, gutter = 0) {
+  const track = Math.max(0, width - gutter - THUMB_PX)
   const span = to - from
+  const origin = gutter + THUMB_PX / 2
   return (minutes: number) =>
-    track === 0 || span === 0 ? 0 : THUMB_PX / 2 + ((minutes - from) / span) * track
+    track === 0 || span === 0 ? origin : origin + ((minutes - from) / span) * track
 }
 
 // Hourly ticks collide below about 700px, so the step widens to two hours and
@@ -64,8 +71,8 @@ export function ClosureGantt({ year, day, focus, minutes, onHover, onSelect }: P
   // The axis sits at the top, directly under the scrubber it shares a scale
   // with, rather than at the bottom where it drifts away from the control.
   const height = AXIS_HEIGHT + closures.length * ROW_HEIGHT
-  const track = Math.max(0, width - THUMB_PX)
-  const x = timeScale(width, from, to)
+  const track = Math.max(0, width - GUTTER_PX - THUMB_PX)
+  const x = timeScale(width, from, to, GUTTER_PX)
 
   return (
     <div className="gantt" ref={ref}>
@@ -162,14 +169,9 @@ export function ClosureGantt({ year, day, focus, minutes, onHover, onSelect }: P
                 ))}
               <text
                 className="gantt__bar-label"
-                // A presentation attribute loses to the stylesheet's fill, so this
-                // has to be inline style. Filled bars take dark type; the hollow
-                // pending bar has only the panel behind it.
-                style={{
-                  fill: outlined ? token('--text-secondary') : token('--bg-base'),
-                }}
-                x={barX + 5}
+                x={GUTTER_PX - 8}
                 y={AXIS_HEIGHT + index * ROW_HEIGHT + ROW_HEIGHT / 2 + 3.5}
+                textAnchor="end"
               >
                 {closure.stageCodes.join(' / ')}
               </text>
@@ -185,6 +187,21 @@ export function ClosureGantt({ year, day, focus, minutes, onHover, onSelect }: P
           y2={height}
         />
       </svg>
+
+      {/* Three encodings are in play now — fill, outline and dash — so the key
+          carries more than it did when state was colour alone. */}
+      <ul className="gantt__legend">
+        <li>
+          <span className="gantt__key gantt__key--pending" /> not yet closed
+        </li>
+        <li>
+          <span className="gantt__key gantt__key--closed" /> closed now
+        </li>
+        <li>
+          <span className="gantt__key gantt__key--reopened" /> reopened
+        </li>
+        <li className="gantt__legend-note">focus is opacity and weight, never colour</li>
+      </ul>
     </div>
   )
 }

@@ -34,6 +34,11 @@ describe('tokens', () => {
     for (const name of REQUIRED) expect(token(name)).toMatch(/^#[0-9a-f]{6}$/)
   })
 
+  it('exposes the gantt gutter as a px length both the chart and the scrubber read', () => {
+    expect(token('--gantt-gutter')).toMatch(/^\d+px$/)
+    expect(Number.parseFloat(token('--gantt-gutter'))).toBeGreaterThan(0)
+  })
+
   it('throws on an unknown token rather than emitting undefined into a paint expression', () => {
     expect(() => token('--nope')).toThrow(/Unknown design token/)
   })

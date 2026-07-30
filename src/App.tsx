@@ -232,7 +232,10 @@ export default function App({
         </div>
       </main>
 
-      <section className="app__time" aria-label="Road closure timeline">
+      <section
+        className={detail ? 'app__time is-compact' : 'app__time'}
+        aria-label="Road closure timeline"
+      >
         <TimeScrubber
           envelope={envelope}
           minutes={minutes}
@@ -240,28 +243,36 @@ export default function App({
           liveNow={liveNow}
         />
 
-        {/* Eleven closure rows is most of a phone screen. The scrubber and its
-            readout always show; the bars are opt-in on a narrow viewport. */}
-        <button
-          type="button"
-          className="app__time-toggle"
-          aria-expanded={showGantt}
-          aria-controls="closure-gantt"
-          onClick={() => setShowGantt(!showGantt)}
-        >
-          {showGantt ? 'Hide' : 'Show'} closure timeline
-        </button>
+        {/* The map is primary; the panel, timeline and detail compete only with
+            each other. One expanded secondary surface at a time, so opening a
+            stage folds the bars away — they used to hold 40% of the viewport
+            while the reader was looking at something else. Eleven closure rows
+            is also most of a phone screen, so on narrow they start folded. */}
+        {!detail && (
+          <>
+            <button
+              type="button"
+              className="app__time-toggle"
+              aria-expanded={showGantt}
+              aria-controls="closure-gantt"
+              onClick={() => setShowGantt(!showGantt)}
+            >
+              {showGantt ? 'Hide' : 'Show'} closure timeline
+            </button>
 
-        <div id="closure-gantt" hidden={!showGantt}>
-          <ClosureGantt
-            year={year}
-            day={day}
-            focus={focus}
-            minutes={minutes}
-            onHover={onHover}
-            onSelect={onSelect}
-          />
-        </div>
+            <div id="closure-gantt" hidden={!showGantt}>
+              <ClosureGantt
+                year={year}
+                day={day}
+                focus={focus}
+                minutes={minutes}
+                onHover={onHover}
+                onSelect={onSelect}
+              />
+            </div>
+          </>
+        )}
+
       </section>
     </div>
   )

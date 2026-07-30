@@ -11,6 +11,7 @@ import { gradeGradientExpression } from '../ui/grade'
 import type { Cursor, StageDetail } from '../domain/types'
 import {
   casingLayer,
+  codeLabelLayer,
   cursorLayer,
   CURSOR_SOURCE,
   DETAIL_SOURCE,
@@ -103,10 +104,16 @@ export function RallyMap({
     instance.on('load', () => {
       for (const d of DAYS) {
         const features = featuresForDay(year, d)
+        // MapLibre cannot join an array inside a text-field, so the label a line
+        // carries is composed here rather than in the style.
+        const labelled = features.map((feature) => ({
+          ...feature,
+          properties: { ...feature.properties, codeLabel: feature.properties.stageCodes.join(' / ') },
+        }))
         instance.addSource(sourceId(d), {
           type: 'geojson',
           promoteId: 'featureId',
-          data: { type: 'FeatureCollection', features },
+          data: { type: 'FeatureCollection', features: labelled },
         })
         instance.addSource(terminiSourceId(d), {
           type: 'geojson',
@@ -118,6 +125,9 @@ export function RallyMap({
         instance.addLayer(reopenedDashLayer(d))
         instance.addLayer(hitLayer(d))
         instance.addLayer(terminiLayer(d))
+        // Codes before terminus labels: MapLibre resolves symbol collisions in
+        // layer order, and the stage code is the more useful of the two.
+        instance.addLayer(codeLabelLayer(d))
         instance.addLayer(terminiLabelLayer(d))
 
         instance.on('mousemove', hitLayerId(d), (event) => {

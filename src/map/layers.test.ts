@@ -19,7 +19,9 @@ const usesFeatureState = (value: unknown, key: string) =>
 describe('layers', () => {
   it('keeps every day on its own source and layer ids', () => {
     expect(sourceId(1)).not.toBe(sourceId(2))
-    expect(new Set(layerIdsForDay(1)).size).toBe(6)
+    // Unique within a day and disjoint between days. A count here just breaks
+    // every time a layer is added, without testing anything.
+    expect(new Set(layerIdsForDay(1)).size).toBe(layerIdsForDay(1).length)
     expect(layerIdsForDay(1).some((id) => layerIdsForDay(2).includes(id))).toBe(false)
   })
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { hourTicks, timeScale } from './ClosureGantt'
+import { GUTTER_PX, hourTicks, timeScale } from './ClosureGantt'
 import { THUMB_PX } from './TimeScrubber'
 import { parseClock } from '../domain/time'
 
@@ -29,9 +29,22 @@ describe('timeScale', () => {
     expect(first).toBeCloseTo(later, 6)
   })
 
+  // Everything collapses onto the origin rather than onto x=0, so an unmeasured
+  // chart draws a degenerate line at the start of the track instead of hard left.
   it('collapses safely before the container has been measured', () => {
-    expect(timeScale(0, FROM, TO)(FROM)).toBe(0)
-    expect(timeScale(10, FROM, FROM)(FROM)).toBe(0)
+    expect(timeScale(0, FROM, TO)(FROM)).toBe(THUMB_PX / 2)
+    expect(timeScale(10, FROM, FROM)(FROM)).toBe(THUMB_PX / 2)
+    expect(timeScale(0, FROM, TO, GUTTER_PX)(FROM)).toBe(GUTTER_PX + THUMB_PX / 2)
+  })
+
+  // The row labels sit in a gutter, so the plot starts inboard of the chart. The
+  // scrubber input is indented by the same token; if these drift the now-line no
+  // longer sits under the thumb, which is the defect this scale exists to prevent.
+  it('starts the plot after the label gutter, where the scrubber track starts', () => {
+    const g = timeScale(width, FROM, TO, GUTTER_PX)
+    expect(g(FROM)).toBe(GUTTER_PX + THUMB_PX / 2)
+    expect(g(TO)).toBe(width - THUMB_PX / 2)
+    expect(g((FROM + TO) / 2)).toBeCloseTo((GUTTER_PX + width) / 2, 6)
   })
 })
 

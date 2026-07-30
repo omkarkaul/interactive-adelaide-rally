@@ -20,7 +20,10 @@ const appStates = [
   { name: 'day-view-scrubbed', path: '/?year=2026&day=1&t=09:40' },
   { name: 'day-view-three-states', path: '/?year=2026&day=1&t=13:00' },
   { name: 'detail', path: '/?year=2026&day=1&stage=SS4' },
-  { name: 'detail-scrubbed', path: '/?year=2026&day=1&stage=SS4&t=09:40' }
+  { name: 'detail-scrubbed', path: '/?year=2026&day=1&stage=SS4&t=09:40' },
+  // Focus is a pointer state, so it has no URL. Captured here anyway: the panel
+  // and map focus treatments cannot be reviewed from a screenshot without it.
+  { name: 'day-view-hovered', path: '/?year=2026&day=1&t=09:40', hover: '.stage-card:nth-of-type(1)' }
 ]
 
 const mockups = ['day-view', 'elevation-profile', 'stage-detail', 'stage-detail-mobile']
@@ -80,7 +83,7 @@ async function main() {
           name: m,
           url: pathToFileURL(resolve(`docs/design/mockups/${m}.html`)).href
         }))
-      : appStates.map((s) => ({ name: s.name, url: base + s.path }))
+      : appStates.map((s) => ({ name: s.name, url: base + s.path, hover: s.hover }))
 
   const browser = await chromium.launch({
     args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader']
@@ -99,6 +102,10 @@ async function main() {
       for (const target of targets) {
         await page.goto(target.url, { waitUntil: 'domcontentloaded' })
         await settle(page)
+        if (target.hover) {
+          await page.locator(target.hover).first().hover()
+          await page.waitForTimeout(600)
+        }
         const file = `${OUT}/${mode}-${vp.name}-${target.name}.png`
         await page.screenshot({ path: file })
         console.log(file)

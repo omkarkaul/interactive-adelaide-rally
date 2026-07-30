@@ -28,6 +28,37 @@ R1–R4 are held to **62 / 100 / 100 / 100**, not the plan's 90. The drop is ent
 thread once the map actually renders. FCP 1.3 s and CLS 0.029 both still score ≥98.
 Recovering performance is not in this plan's scope; not regressing it is.
 
+## Carried forward, not yet addressed
+
+Raised by the R1 and R2 critique passes. None belongs to a criterion that has
+been signed off; each is listed against the stage that owns it.
+
+R3 — stage detail:
+- The map does not reframe onto the selected stage. SS4 runs off the bottom of
+  the viewport while the left half of the map is empty suburb grid.
+- The grade ramp uses red for climb, which is `--state-closed` everywhere else,
+  in the same viewport as red route lines.
+- Elevation y-axis values carry no unit.
+- The stat strip reflows ragged: "19.65 km" wraps and pushes its tile taller
+  than its three siblings, and "18.3% MAX GRADE" drops to a row of its own.
+
+R4 — mobile:
+- The MapLibre attribution pill spans ~89% of the viewport width on a phone and
+  covers the lower routes. Restyling it dark helped; it is still the widest
+  object on the map.
+- The map holds 33% of the height at 390px and stages render as 40-60px
+  squiggles.
+- The time bar slices through the last visible stage card mid-block, at every
+  width. The panel needs a scroll affordance, or the list needs to stop cleanly.
+
+R5 — review:
+- `focus is opacity and weight, never colour` is a design-spec annotation that
+  currently ships in the legend. It means nothing to someone looking up a road.
+- The now-line has no time readout attached; the clock sits at the far right of
+  the scrubber, ~1400px away from the line it describes.
+- The day map fits the whole day's bounds, leaving roughly a third of the canvas
+  empty at every width.
+
 ## Honesty check
 
 The plan gates R0 on `current-mobile-detail.png` reproducing a clipped elevation

@@ -23,8 +23,11 @@ export const reopenedDashLayerId = (day: number) => `stages-reopened-dash-day-${
 export const hitLayerId = (day: number) => `stages-hit-day-${day}`
 export const terminiLayerId = (day: number) => `termini-day-${day}`
 export const terminiLabelLayerId = (day: number) => `termini-label-day-${day}`
+export const codeLabelLayerId = (day: number) => `stages-code-day-${day}`
 
 const state = (key: string) => ['boolean', ['feature-state', key], false]
+
+const DIM_OPACITY = 0.2
 
 const dimmed = (dimmedValue: unknown, normal: unknown) => [
   'case',
@@ -107,7 +110,7 @@ export function lineLayer(day: number): LineLayerSpecification {
     layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: {
       'line-color': byState(COLOR.pending, COLOR.closed, COLOR.reopened) as never,
-      'line-opacity': dimmed(0.2, 1) as never,
+      'line-opacity': dimmed(DIM_OPACITY, 1) as never,
       'line-width': lineWidth as never,
     },
   }
@@ -174,7 +177,10 @@ export function terminiLabelLayer(day: number): SymbolLayerSpecification {
     id: terminiLabelLayerId(day),
     type: 'symbol',
     source: terminiSourceId(day),
-    minzoom: 11,
+    // Held back to 13 so the stage codes own the zoom band where they first
+    // appear. Filled-vs-hollow already says which end is which; twenty repeats
+    // of "Start" and "Finish" were beating the codes in symbol collision.
+    minzoom: 13,
     layout: {
       'text-field': ['get', 'label'],
       'text-font': ['Noto Sans Regular'],
@@ -187,6 +193,37 @@ export function terminiLabelLayer(day: number): SymbolLayerSpecification {
       'text-color': COLOR.label,
       'text-halo-color': COLOR.casing,
       'text-halo-width': 1.2,
+      'text-opacity': dimmed(0.2, 1) as never,
+    },
+  }
+}
+
+// Names the line on the map so the route can be identified without crossing to
+// the panel. Below zoom 11 the stages are too short to carry a label.
+export function codeLabelLayer(day: number): SymbolLayerSpecification {
+  return {
+    id: codeLabelLayerId(day),
+    type: 'symbol',
+    source: sourceId(day),
+    minzoom: 11,
+    layout: {
+      'text-field': ['get', 'codeLabel'],
+      'text-font': ['Noto Sans Regular'],
+      'text-size': 12,
+      // Placed on the line but kept upright. Aligned to the map, a code sitting
+      // on one of the Corkscrew hairpins came out sideways and upside down.
+      'symbol-placement': 'point',
+      // Lifted clear of the line. Sitting on it, the route showed through the
+      // space in "SS4 / SS7" and read as a second slash.
+      'text-offset': [0, -1.3],
+      'text-allow-overlap': false,
+      'text-padding': 3,
+    },
+    paint: {
+      'text-color': COLOR.label,
+      'text-halo-color': COLOR.casing,
+      'text-halo-width': 2,
+      'text-halo-blur': 0.5,
       'text-opacity': dimmed(0.2, 1) as never,
     },
   }
@@ -259,4 +296,5 @@ export const layerIdsForDay = (day: number) => [
   hitLayerId(day),
   terminiLayerId(day),
   terminiLabelLayerId(day),
+  codeLabelLayerId(day),
 ]
