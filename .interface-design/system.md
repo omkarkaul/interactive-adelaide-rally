@@ -138,22 +138,45 @@ Padding 10px 12px · radius 8px · `border-left: 3px` in the closure state colou
 Normal: transparent background
 Focused: `--bg-elevated`, 1px `--border-strong`
 Dimmed: 40% opacity
+Reopened: rail switches to `dashed`, card to 75% opacity
+
+The dashed rail is not decoration. Pending and reopened are 1.23:1 apart, so
+without it the panel is the one surface that cannot tell them apart. 75% is the
+opacity floor — 60% drops the stage code and closure time to 3.4:1, under AA.
 
 ### Map route line
 
-Focused: 6px + 2px casing, opacity 1.0
-Normal: 4px closed / 3px pending / 2px reopened, opacity 0.85
+Focused: 8px + 2px casing, opacity 1.0
+Normal: 6px closed / 4px pending / 3px reopened, opacity 0.85
 Dimmed: 3px, opacity 0.20
+Reopened also carries a 1.6/1.6 dash, punched through with `--map-casing`
+
+Quoted at zoom 12 and scaled 0.75 / 1 / 1.3 across zooms 8 / 12 / 14.
 
 Focus is opacity and weight. Never substitute a colour.
+
+Closed is the heaviest because it cannot be the brightest. `--state-closed`
+sits at relative luminance 0.218, and clearing 3:1 against the basemap's
+lightest fill needs 0.169, so every grey that stays legible on the map is also
+brighter than the red. Weight carries the ranking that lightness cannot, and the
+dash — not a lightness step — is what separates reopened from pending, which are
+only 1.23:1 apart.
+
+The earlier 4 / 3 / 2 ladder was quoted against the mockup's bare canvas. On a
+real basemap those weights read as one more line in the OSM road graph.
 
 ### Gantt bar
 
 Height 12px · radius 3px
-Pending: transparent with 1px `--state-pending` outline
+Pending: filled `--state-pending`
 Closed: filled `--state-closed`
-Reopened: filled `--state-reopened`
+Reopened: transparent with a 1px dashed `--state-reopened` outline
 Provisional: 4px dashed end caps both sides
+
+Ink decreases as a closure completes, which is the same ranking the map uses —
+closed heaviest, reopened lightest and the only dashed treatment. Hollowing the
+pending bar instead inverted the two surfaces against each other: the emptier
+treatment meant "not yet" in the timeline and "already done" on the map.
 
 ### Stat strip
 

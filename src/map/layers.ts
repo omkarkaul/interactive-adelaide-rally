@@ -11,6 +11,7 @@ export const COLOR = {
   reopened: token('--state-reopened'),
   casing: token('--map-casing'),
   label: token('--text-primary'),
+  terminus: token('--text-secondary'),
   accent: token('--accent'),
 } as const
 
@@ -18,6 +19,7 @@ export const sourceId = (day: number) => `stages-day-${day}`
 export const terminiSourceId = (day: number) => `termini-day-${day}`
 export const casingLayerId = (day: number) => `stages-casing-day-${day}`
 export const lineLayerId = (day: number) => `stages-line-day-${day}`
+export const reopenedDashLayerId = (day: number) => `stages-reopened-dash-day-${day}`
 export const hitLayerId = (day: number) => `stages-hit-day-${day}`
 export const terminiLayerId = (day: number) => `termini-day-${day}`
 export const terminiLabelLayerId = (day: number) => `termini-label-day-${day}`
@@ -60,23 +62,27 @@ const byZoom = (widthAt: (scale: number) => unknown) => [
   ...SCALE.flatMap(([zoom, scale]) => [zoom, widthAt(scale)]),
 ]
 
+// Closed cannot out-brighten the other two — no grey that clears the basemap
+// contrast floor is dimmer than the red — so it dominates by weight instead.
+const WIDTH = { focused: 8, dimmed: 3, pending: 4, closed: 6, reopened: 3 }
+
 const lineWidth = byZoom((s) => [
   'case',
   state('focused'),
-  6 * s,
+  WIDTH.focused * s,
   state('dimmed'),
-  3 * s,
-  byState(3 * s, 4 * s, 2 * s),
+  WIDTH.dimmed * s,
+  byState(WIDTH.pending * s, WIDTH.closed * s, WIDTH.reopened * s),
 ])
 
 // A focused line carries a 2px casing each side; everything else gets 1px.
 const casingWidth = byZoom((s) => [
   'case',
   state('focused'),
-  6 * s + 4,
+  WIDTH.focused * s + 4,
   state('dimmed'),
-  3 * s + 2,
-  byState(3 * s + 2, 4 * s + 2, 2 * s + 2),
+  WIDTH.dimmed * s + 2,
+  byState(WIDTH.pending * s + 2, WIDTH.closed * s + 2, WIDTH.reopened * s + 2),
 ])
 
 export function casingLayer(day: number): LineLayerSpecification {
@@ -101,8 +107,35 @@ export function lineLayer(day: number): LineLayerSpecification {
     layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: {
       'line-color': byState(COLOR.pending, COLOR.closed, COLOR.reopened) as never,
-      'line-opacity': ['case', state('focused'), 1, state('dimmed'), 0.2, 0.85] as never,
+      'line-opacity': dimmed(0.2, 1) as never,
       'line-width': lineWidth as never,
+    },
+  }
+}
+
+// Reopened is told apart from pending by dash, not by lightness. No two greys can
+// be further apart than 1.23:1 while both clear the basemap contrast floor, so a
+// pattern difference is the only one available. Punching casing-coloured gaps into
+// the line is how, since line-dasharray itself cannot be driven by feature-state.
+export function reopenedDashLayer(day: number): LineLayerSpecification {
+  return {
+    id: reopenedDashLayerId(day),
+    type: 'line',
+    source: sourceId(day),
+    layout: { 'line-cap': 'butt', 'line-join': 'round' },
+    paint: {
+      'line-color': COLOR.casing,
+      'line-dasharray': [1.4, 1.4],
+      // Wider than the line so the gaps cut the casing too. Sized to the line, the
+      // casing survived in every gap and filled the dash back in.
+      'line-width': casingWidth as never,
+      'line-opacity': [
+        'match',
+        ['string', ['feature-state', 'closureState'], 'pending'],
+        'reopened',
+        dimmed(0.2, 1),
+        0,
+      ] as never,
     },
   }
 }
@@ -124,12 +157,12 @@ export function terminiLayer(day: number): CircleLayerSpecification {
     type: 'circle',
     source: terminiSourceId(day),
     paint: {
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 3, 14, 6] as never,
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 2.5, 14, 4.5] as never,
       // Start is filled, finish is hollow. Direction is a form difference, not a
       // hue one — hue is spoken for by closure state.
-      'circle-color': ['match', ['get', 'role'], 'start', COLOR.label, COLOR.casing] as never,
+      'circle-color': ['match', ['get', 'role'], 'start', COLOR.terminus, COLOR.casing] as never,
       'circle-stroke-width': 1.5,
-      'circle-stroke-color': COLOR.label,
+      'circle-stroke-color': COLOR.terminus,
       'circle-opacity': dimmed(0.2, 1) as never,
       'circle-stroke-opacity': dimmed(0.2, 1) as never,
     },
@@ -222,6 +255,7 @@ export const detailLayerIds = [DETAIL_LAYER, DETAIL_ARROW_LAYER, CURSOR_LAYER]
 export const layerIdsForDay = (day: number) => [
   casingLayerId(day),
   lineLayerId(day),
+  reopenedDashLayerId(day),
   hitLayerId(day),
   terminiLayerId(day),
   terminiLabelLayerId(day),

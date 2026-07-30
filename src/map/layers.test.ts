@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   casingLayer,
+  reopenedDashLayer,
   COLOR,
   hitLayer,
   hitLayerId,
@@ -18,7 +19,7 @@ const usesFeatureState = (value: unknown, key: string) =>
 describe('layers', () => {
   it('keeps every day on its own source and layer ids', () => {
     expect(sourceId(1)).not.toBe(sourceId(2))
-    expect(new Set(layerIdsForDay(1)).size).toBe(5)
+    expect(new Set(layerIdsForDay(1)).size).toBe(6)
     expect(layerIdsForDay(1).some((id) => layerIdsForDay(2).includes(id))).toBe(false)
   })
 
@@ -32,8 +33,9 @@ describe('layers', () => {
 
   // Focus must be a paint-time state change, never a layer swap.
   it('reads focus and dimming from feature-state rather than properties', () => {
+    // Focus widens the line; everything else drops to 0.20. Both directions are
+    // feature-state, neither is a colour.
     expect(usesFeatureState(lineLayer(1).paint?.['line-width'], 'focused')).toBe(true)
-    expect(usesFeatureState(lineLayer(1).paint?.['line-opacity'], 'focused')).toBe(true)
     expect(usesFeatureState(lineLayer(1).paint?.['line-opacity'], 'dimmed')).toBe(true)
     expect(usesFeatureState(casingLayer(1).paint?.['line-opacity'], 'dimmed')).toBe(true)
     expect(usesFeatureState(terminiLayer(1).paint?.['circle-opacity'], 'dimmed')).toBe(true)
@@ -80,6 +82,27 @@ describe('layers', () => {
     }
   })
 
+  // Pending and reopened are only 1.23:1 apart in luminance, because no pair of
+  // greys that clears the basemap contrast floor can be further apart. The dash is
+  // what actually separates them, so it is not decoration.
+  it('dashes the reopened line, and only the reopened line', () => {
+    const paint = reopenedDashLayer(1).paint!
+    expect(paint['line-dasharray']).toEqual([1.4, 1.4])
+    expect(paint['line-color']).toBe(COLOR.casing)
+
+    const opacity = JSON.stringify(paint['line-opacity'])
+    expect(opacity).toContain('reopened')
+    expect(usesFeatureState(paint['line-opacity'], 'closureState')).toBe(true)
+  })
+
+  it('ranks the states by weight, since it cannot rank them by brightness', () => {
+    const widths = JSON.stringify(lineLayer(1).paint?.['line-width'])
+    // At zoom 12 the scale factor is 1, so the spec values appear verbatim.
+    expect(widths).toContain('6')
+    expect(widths).toContain('4')
+    expect(widths).toContain('3')
+  })
+
   it('puts a wide invisible band under each line for pointer targeting', () => {
     const hit = hitLayer(1)
     expect(hit.id).toBe(hitLayerId(1))
@@ -90,8 +113,10 @@ describe('layers', () => {
   it('draws termini from their own source, filled or hollow by role', () => {
     expect(terminiLayer(1).source).toBe(terminiSourceId(1))
     const fill = JSON.stringify(terminiLayer(1).paint?.['circle-color'])
-    expect(fill).toContain(COLOR.label)
+    expect(fill).toContain(COLOR.terminus)
     expect(fill).toContain(COLOR.casing)
+    // Termini must not out-brighten the route layer they annotate.
+    expect(COLOR.terminus).not.toBe(COLOR.label)
     expect(terminiLabelLayer(1).layout?.['text-field']).toEqual(['get', 'label'])
   })
 })

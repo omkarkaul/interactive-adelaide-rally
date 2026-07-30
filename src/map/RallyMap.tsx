@@ -22,6 +22,7 @@ import {
   hitLayerId,
   layerIdsForDay,
   lineLayer,
+  reopenedDashLayer,
   sourceId,
   terminiLabelLayer,
   terminiLayer,
@@ -114,6 +115,7 @@ export function RallyMap({
         })
         instance.addLayer(casingLayer(d))
         instance.addLayer(lineLayer(d))
+        instance.addLayer(reopenedDashLayer(d))
         instance.addLayer(hitLayer(d))
         instance.addLayer(terminiLayer(d))
         instance.addLayer(terminiLabelLayer(d))

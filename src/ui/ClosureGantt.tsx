@@ -112,9 +112,11 @@ export function ClosureGantt({ year, day, focus, minutes, onHover, onSelect }: P
           const dimmed = mark.every((m) => m === 'dimmed')
           const closureState = closureStateAt(closure, minutes)
 
-          // Pending reads as an empty container waiting to be filled; closed and
-          // reopened are solid. Hue is the only thing carrying state here.
-          const outlined = closureState === 'pending'
+          // Ink decreases as a closure completes: solid grey while pending, solid
+          // red while closed, a dashed outline once reopened. That matches the map,
+          // where reopened is the thinnest and the only dashed line. Filling the
+          // pending bar and hollowing the reopened one used to invert the two.
+          const outlined = closureState === 'reopened'
           const barX = x(window.closesAt)
           const barWidth = Math.max(1, x(window.reopensAt) - barX)
           const barY = AXIS_HEIGHT + index * ROW_HEIGHT + (ROW_HEIGHT - BAR_HEIGHT) / 2
@@ -145,6 +147,7 @@ export function ClosureGantt({ year, day, focus, minutes, onHover, onSelect }: P
                 fill={outlined ? 'none' : STATE_COLOR[closureState]}
                 stroke={outlined ? STATE_COLOR[closureState] : 'none'}
                 strokeWidth={outlined ? 1 : 0}
+                strokeDasharray={outlined ? '3 2' : undefined}
               />
               {caps &&
                 [barX, barX + barWidth - CAP_PX].map((capX) => (

@@ -111,6 +111,46 @@ a {
   inset: 0;
 }
 
+/* MapLibre ships its controls white, which on a dark basemap makes the
+   attribution pill and the zoom buttons the brightest objects on screen —
+   brighter than any route line.
+
+   The attribution needs .maplibregl-compact in the selector as well. MapLibre's
+   own rule is .maplibregl-ctrl-attrib.maplibregl-compact, which ties a two-class
+   selector, and its stylesheet loads after this one so the tie goes to it. Same
+   trap as .app__map .rally-map above. */
+.rally-map .maplibregl-ctrl-group,
+.rally-map .maplibregl-ctrl-attrib,
+.rally-map .maplibregl-ctrl-attrib.maplibregl-compact,
+.rally-map .maplibregl-ctrl-scale {
+  background: color-mix(in srgb, var(--bg-panel) 88%, transparent);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.rally-map .maplibregl-ctrl-scale {
+  border-top: none;
+}
+
+.rally-map .maplibregl-ctrl-attrib.maplibregl-compact,
+.rally-map .maplibregl-ctrl-attrib-inner,
+.rally-map .maplibregl-ctrl-attrib-inner a {
+  color: var(--text-muted);
+}
+
+.rally-map .maplibregl-ctrl-attrib-button {
+  background-color: color-mix(in srgb, var(--text-primary) 10%, transparent);
+  filter: invert(1) brightness(0.52);
+}
+
+.rally-map .maplibregl-ctrl-group button + button {
+  border-top: 1px solid var(--border);
+}
+
+.rally-map .maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+  filter: invert(1) brightness(0.52);
+}
+
 /* Day tabs */
 
 .day-tabs {
@@ -205,9 +245,12 @@ a {
 }
 
 /* Already reopened: still listed, but it has stopped being actionable. 0.75 is
-   the floor — 0.6 drops the code and the closure time to 3.4:1, under AA. */
+   the floor — 0.6 drops the code and the closure time to 3.4:1, under AA. The rail
+   is dashed because pending and reopened are nearly the same grey; without it the
+   panel is the one surface that cannot tell the two states apart. */
 .stage-card.is-reopened {
   border-left-color: var(--state-reopened);
+  border-left-style: dashed;
   opacity: 0.75;
 }
 
