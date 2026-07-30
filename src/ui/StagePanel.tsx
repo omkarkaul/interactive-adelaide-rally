@@ -1,7 +1,8 @@
 import { emphasis } from '../domain/focus'
 import { closureForStage, stagesForDay } from '../domain/link'
-import { formatWindow, isClosedAt } from '../domain/time'
+import { formatWindow } from '../domain/time'
 import type { Focus, RallyYear, StageCode } from '../domain/types'
+import { closureStateAt } from './closureState'
 
 interface Props {
   year: RallyYear
@@ -26,13 +27,14 @@ export function StagePanel({ year, day, focus, minutes, onHover, onSelect }: Pro
         {stages.map((stage) => {
           const closure = closureForStage(year, stage.code)!
           const mark = emphasis(focus, stage.code)
-          const closed = minutes !== null && isClosedAt(closure, minutes)
+          const closureState = closureStateAt(closure, minutes)
+          const closed = closureState === 'closed'
 
           return (
             <li key={stage.code}>
               <button
                 type="button"
-                className={`stage-card is-${mark}${closed ? ' is-closed' : ''}`}
+                className={`stage-card is-${mark} is-${closureState}${closed ? ' is-closed' : ''}`}
                 aria-pressed={focus.kind === 'selected' && focus.code === stage.code}
                 onMouseEnter={() => onHover(stage.code)}
                 onMouseLeave={() => onHover(null)}

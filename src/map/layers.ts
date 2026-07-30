@@ -3,14 +3,15 @@ import type {
   LineLayerSpecification,
   SymbolLayerSpecification,
 } from 'maplibre-gl'
+import { token } from '../tokens'
 
 export const COLOR = {
-  line: '#ff6b3d',
-  focused: '#ffd23f',
-  closed: '#e5484d',
-  casing: '#1b1d24',
-  start: '#3ddc84',
-  finish: '#e5484d',
+  pending: token('--state-pending'),
+  closed: token('--state-closed'),
+  reopened: token('--state-reopened'),
+  casing: token('--map-casing'),
+  label: token('--text-primary'),
+  accent: token('--accent'),
 } as const
 
 export const sourceId = (day: number) => `stages-day-${day}`
@@ -30,6 +31,54 @@ const dimmed = (dimmedValue: unknown, normal: unknown) => [
   normal,
 ]
 
+// Hue carries closure state and nothing else. Focus is expressed only through
+// opacity and width, so a dimmed closed stage stays red rather than turning grey.
+const byState = (pending: unknown, closed: unknown, reopened: unknown) => [
+  'match',
+  ['string', ['feature-state', 'closureState'], 'pending'],
+  'closed',
+  closed,
+  'reopened',
+  reopened,
+  pending,
+]
+
+// Widths are quoted per the spec at zoom 12 and scaled from there, so the ratios
+// between the three states survive zooming. A zoom interpolation has to be the
+// outermost expression — wrapping one in an arithmetic operator makes MapLibre
+// reject the paint property, and the layer then draws nothing at all.
+const SCALE: [number, number][] = [
+  [8, 0.75],
+  [12, 1],
+  [14, 1.3],
+]
+
+const byZoom = (widthAt: (scale: number) => unknown) => [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  ...SCALE.flatMap(([zoom, scale]) => [zoom, widthAt(scale)]),
+]
+
+const lineWidth = byZoom((s) => [
+  'case',
+  state('focused'),
+  6 * s,
+  state('dimmed'),
+  3 * s,
+  byState(3 * s, 4 * s, 2 * s),
+])
+
+// A focused line carries a 2px casing each side; everything else gets 1px.
+const casingWidth = byZoom((s) => [
+  'case',
+  state('focused'),
+  6 * s + 4,
+  state('dimmed'),
+  3 * s + 2,
+  byState(3 * s + 2, 4 * s + 2, 2 * s + 2),
+])
+
 export function casingLayer(day: number): LineLayerSpecification {
   return {
     id: casingLayerId(day),
@@ -38,16 +87,8 @@ export function casingLayer(day: number): LineLayerSpecification {
     layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: {
       'line-color': COLOR.casing,
-      'line-opacity': dimmed(0.25, 0.9) as never,
-      'line-width': [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        8,
-        ['case', state('focused'), 6, 4],
-        14,
-        ['case', state('focused'), 12, 9],
-      ] as never,
+      'line-opacity': dimmed(0.2, 0.9) as never,
+      'line-width': casingWidth as never,
     },
   }
 }
@@ -59,24 +100,9 @@ export function lineLayer(day: number): LineLayerSpecification {
     source: sourceId(day),
     layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: {
-      'line-color': [
-        'case',
-        state('focused'),
-        COLOR.focused,
-        state('closed'),
-        COLOR.closed,
-        COLOR.line,
-      ] as never,
-      'line-opacity': dimmed(0.28, 1) as never,
-      'line-width': [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        8,
-        ['case', state('focused'), 3.5, 2],
-        14,
-        ['case', state('focused'), 8, 5],
-      ] as never,
+      'line-color': byState(COLOR.pending, COLOR.closed, COLOR.reopened) as never,
+      'line-opacity': ['case', state('focused'), 1, state('dimmed'), 0.2, 0.85] as never,
+      'line-width': lineWidth as never,
     },
   }
 }
@@ -88,7 +114,7 @@ export function hitLayer(day: number): LineLayerSpecification {
     type: 'line',
     source: sourceId(day),
     layout: { 'line-cap': 'round', 'line-join': 'round' },
-    paint: { 'line-color': COLOR.line, 'line-opacity': 0, 'line-width': 20 },
+    paint: { 'line-color': COLOR.pending, 'line-opacity': 0, 'line-width': 20 },
   }
 }
 
@@ -99,9 +125,11 @@ export function terminiLayer(day: number): CircleLayerSpecification {
     source: terminiSourceId(day),
     paint: {
       'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 3, 14, 6] as never,
-      'circle-color': ['match', ['get', 'role'], 'start', COLOR.start, COLOR.finish] as never,
+      // Start is filled, finish is hollow. Direction is a form difference, not a
+      // hue one — hue is spoken for by closure state.
+      'circle-color': ['match', ['get', 'role'], 'start', COLOR.label, COLOR.casing] as never,
       'circle-stroke-width': 1.5,
-      'circle-stroke-color': COLOR.casing,
+      'circle-stroke-color': COLOR.label,
       'circle-opacity': dimmed(0.2, 1) as never,
       'circle-stroke-opacity': dimmed(0.2, 1) as never,
     },
@@ -123,7 +151,7 @@ export function terminiLabelLayer(day: number): SymbolLayerSpecification {
       'text-allow-overlap': false,
     },
     paint: {
-      'text-color': '#f2f4f8',
+      'text-color': COLOR.label,
       'text-halo-color': COLOR.casing,
       'text-halo-width': 1.2,
       'text-opacity': dimmed(0.2, 1) as never,
@@ -147,7 +175,7 @@ export function detailLineLayer(): LineLayerSpecification {
     layout: { 'line-cap': 'butt', 'line-join': 'round' },
     paint: {
       'line-width': ['interpolate', ['linear'], ['zoom'], 8, 4, 14, 9] as never,
-      'line-gradient': ['interpolate', ['linear'], ['line-progress'], 0, COLOR.line] as never,
+      'line-gradient': ['interpolate', ['linear'], ['line-progress'], 0, token('--g-flat')] as never,
     },
   }
 }
@@ -168,7 +196,7 @@ export function detailArrowLayer(): SymbolLayerSpecification {
       'text-rotation-alignment': 'map',
     },
     paint: {
-      'text-color': '#ffffff',
+      'text-color': COLOR.label,
       'text-halo-color': COLOR.casing,
       'text-halo-width': 1.4,
     },
@@ -182,7 +210,7 @@ export function cursorLayer(): CircleLayerSpecification {
     source: CURSOR_SOURCE,
     paint: {
       'circle-radius': 6,
-      'circle-color': COLOR.focused,
+      'circle-color': COLOR.accent,
       'circle-stroke-width': 2,
       'circle-stroke-color': COLOR.casing,
     },

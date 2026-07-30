@@ -1,0 +1,37 @@
+/* The one place a literal colour may appear. src/tokens.ts parses this file, so
+   the map expressions and the stylesheet cannot drift apart. */
+
+:root {
+  --bg-base: #12141a;
+  --bg-panel: #1b1e26;
+  --bg-elevated: #242832;
+
+  --border: #2f3440;
+  --border-strong: #454b5a;
+
+  --text-primary: #eef0f4;
+  --text-secondary: #a2a9b8;
+  --text-muted: #6f7787;
+
+  --state-pending: #c2c9d6;
+  --state-closed: #e5484d;
+  --state-closed-text: #ff8b8e;
+  --state-reopened: #6f7887;
+
+  --accent: #f2733d;
+
+  --g-up2: #e5484d;
+  --g-up: #f2915d;
+  --g-flat: #7d8798;
+  --g-dn: #6aa9e0;
+  --g-dn2: #3d87d6;
+
+  --map-casing: #0e1015;
+
+  --notice-bg: #2a1416;
+  --notice-text: #ffb3b5;
+
+  --radius-control: 8px;
+  --radius-sheet: 14px;
+  --radius-bar: 3px;
+}

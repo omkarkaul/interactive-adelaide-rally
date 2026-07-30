@@ -88,13 +88,14 @@ describe('time view', () => {
     setScrubber(parseClock('10:00'))
     expect(readout()).toHaveTextContent('10:00')
     expect(card('SS4')).toHaveClass('is-closed')
-    expect(stateOf(map, 'cherryville-plus')).toMatchObject({ closed: true })
+    expect(stateOf(map, 'cherryville-plus')).toMatchObject({ closureState: 'closed' })
 
     setScrubber(parseClock('18:00'))
     expect(card('SS4')).not.toHaveClass('is-closed')
-    expect(stateOf(map, 'cherryville-plus')).toMatchObject({ closed: false })
+    expect(card('SS4')).toHaveClass('is-reopened')
+    expect(stateOf(map, 'cherryville-plus')).toMatchObject({ closureState: 'reopened' })
     expect(card('SS11')).toHaveClass('is-closed')
-    expect(stateOf(map, 'summit-road')).toMatchObject({ closed: true })
+    expect(stateOf(map, 'summit-road')).toMatchObject({ closureState: 'closed' })
   })
 
   it('reopens exactly on the advertised minute', async () => {
@@ -104,18 +105,17 @@ describe('time view', () => {
     expect(card('SS1')).not.toHaveClass('is-closed')
   })
 
+  // Provisional windows end in dashed caps rather than on a hard edge that would
+  // read as a committed time.
   it('renders unconfirmed windows differently from confirmed ones', async () => {
-    const confirmed = screen
-      .getByRole('img', { name: /day 1/i })
-      .querySelectorAll('.gantt__bar')
-    expect([...confirmed].every((bar) => !bar.getAttribute('fill')?.startsWith('url('))).toBe(true)
+    const rows = (day: number) =>
+      screen.getByRole('img', { name: new RegExp(`day ${day}`, 'i') }).querySelectorAll('.gantt__row')
+
+    expect([...rows(1)].some((r) => r.classList.contains('is-provisional'))).toBe(false)
     expect(screen.queryAllByText('Provisional')).toHaveLength(0)
 
     await userEvent.click(screen.getByRole('tab', { name: /Day 2/ }))
-    const provisional = screen
-      .getByRole('img', { name: /day 2/i })
-      .querySelectorAll('.gantt__bar')
-    expect([...provisional].every((bar) => bar.getAttribute('fill')?.startsWith('url('))).toBe(true)
+    expect([...rows(2)].every((r) => r.classList.contains('is-provisional'))).toBe(true)
     expect(screen.queryAllByText('Provisional')).toHaveLength(11)
   })
 

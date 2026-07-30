@@ -18,6 +18,7 @@ const viewports = [
 const appStates = [
   { name: 'day-view', path: '/?year=2026&day=1' },
   { name: 'day-view-scrubbed', path: '/?year=2026&day=1&t=09:40' },
+  { name: 'day-view-three-states', path: '/?year=2026&day=1&t=13:00' },
   { name: 'detail', path: '/?year=2026&day=1&stage=SS4' },
   { name: 'detail-scrubbed', path: '/?year=2026&day=1&stage=SS4&t=09:40' }
 ]

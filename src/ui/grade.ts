@@ -1,15 +1,14 @@
 import type { Profile } from '../domain/types'
+import { token } from '../tokens'
 
 // One diverging ramp shared by the plan view and the profile, so the two read as
 // the same object before the user interacts with either. Blue descends, red climbs.
 const STOPS: [number, string][] = [
-  [-15, '#2c7bb6'],
-  [-8, '#74add1'],
-  [-3, '#a8b4c4'],
-  [0, '#8c9099'],
-  [3, '#f7a072'],
-  [8, '#f46d43'],
-  [15, '#d7191c'],
+  [-15, token('--g-dn2')],
+  [-8, token('--g-dn')],
+  [0, token('--g-flat')],
+  [8, token('--g-up')],
+  [15, token('--g-up2')],
 ]
 
 const hex = (value: string) => [

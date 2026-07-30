@@ -14,6 +14,10 @@ passable. Legibility beats polish.
 
 ## Tokens
 
+Emitted as CSS custom properties by `src/tokens.css`, which is the only file in
+`src/` allowed to contain a literal colour. `src/tokens.ts` parses that same file
+so the MapLibre paint expressions cannot drift from the stylesheet.
+
 ### Spacing
 
 Base: 4px
@@ -21,9 +25,11 @@ Scale: 4, 6, 8, 10, 12, 14, 16, 24
 
 ### Radius
 
-Controls and cards: 8px
-Sheets: 14px top corners only
-Bars and pills: 3px
+```
+--radius-control  8px    controls and cards
+--radius-sheet    14px   sheets, top corners only
+--radius-bar      3px    bars and pills
+```
 
 ### Surfaces
 
@@ -53,11 +59,23 @@ Bars and pills: 3px
 Hue encodes closure state and nothing else.
 
 ```
---state-pending      #7d8798   not yet closed
+--state-pending      #c2c9d6   not yet closed
 --state-closed       #e5484d   closed now, graphics only
 --state-closed-text  #ff8b8e   closed now, type only
---state-reopened     #3f4654   already reopened
+--state-reopened     #6f7887   already reopened
 ```
+
+Pending is the brightest because it is the route itself before anything happens to
+it; closed is the only hue; reopened fades because it has stopped being actionable.
+
+Measured on the `dark` basemap, against its lightest fill `rgb(36,36,36)`: pending
+9.33:1, closed 3.97:1, reopened 3.48:1 — all clear of the 3:1 floor, and pending
+and reopened stay 2.68:1 apart from each other.
+
+The first values here, `#7d8798` and `#3f4654`, were chosen as bar fills on a panel
+and could not survive on a map. `#3f4654` reached only 1.64:1 against the basemap,
+and every grey light enough to clear 3:1 came within 1.4:1 of pending — the two
+states collapsed into one. Separating them by lightness is what makes both work.
 
 ### Accent
 
@@ -77,6 +95,26 @@ Stage detail only. Never on the day map.
 --g-flat  #7d8798   flat
 --g-dn    #6aa9e0   descent
 --g-dn2   #3d87d6   descent >8%
+```
+
+### Map
+
+```
+--map-casing  #0e1015   route line casing, label halo, hollow terminus fill
+```
+
+Darker than `--bg-base` so a route line separates from the dark basemap over both
+road fill and reserve green.
+
+Termini are a form difference, not a hue one: start is filled `--text-primary`,
+finish is hollow — `--map-casing` fill with a `--text-primary` stroke. Hue on the
+map is spoken for by closure state.
+
+### Notice
+
+```
+--notice-bg    #2a1416
+--notice-text  #ffb3b5
 ```
 
 ### Type

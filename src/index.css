@@ -1,18 +1,16 @@
+@import './tokens.css';
+
 :root {
   color-scheme: dark;
 
-  --bg: #12141a;
-  --bg-raised: #1b1e26;
-  --bg-sunken: #0d0f14;
-  --border: #2a2e3a;
-  --text: #eef1f6;
-  --text-dim: #9aa3b2;
-  --accent: #ff6b3d;
-  --focus: #ffd23f;
-  --closed: #e5484d;
-  --closed-text: #ff8085;
-  --ok: #3ddc84;
-  --radius: 8px;
+  --bg: var(--bg-base);
+  --bg-raised: var(--bg-panel);
+  --bg-sunken: var(--bg-panel);
+  --text: var(--text-primary);
+  --text-dim: var(--text-secondary);
+  --closed: var(--state-closed);
+  --closed-text: var(--state-closed-text);
+  --radius: var(--radius-control);
   --panel-width: 360px;
 
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -58,7 +56,7 @@ a {
   align-items: flex-end;
   justify-content: space-between;
   gap: 24px;
-  padding: 12px 20px;
+  padding: 12px 24px;
   background: var(--bg-raised);
   border-bottom: 1px solid var(--border);
 }
@@ -136,13 +134,13 @@ a {
 
 .day-tab:hover {
   color: var(--text);
-  border-color: #3a4050;
+  border-color: var(--border-strong);
 }
 
 .day-tab.is-selected {
   background: var(--accent);
   border-color: var(--accent);
-  color: #1a0e08;
+  color: var(--bg-base);
 }
 
 .day-tab__number {
@@ -177,7 +175,7 @@ a {
   padding: 10px 12px;
   background: var(--bg-raised);
   border: 1px solid transparent;
-  border-left: 3px solid var(--accent);
+  border-left: 3px solid var(--state-pending);
   border-radius: var(--radius);
   color: inherit;
   cursor: pointer;
@@ -189,14 +187,13 @@ a {
 }
 
 .stage-card:hover {
-  border-color: #3a4050;
-  border-left-color: var(--focus);
+  border-color: var(--border-strong);
 }
 
+/* Focus is surface and border. The left border is spoken for by closure state. */
 .stage-card.is-focused {
-  background: #262a36;
-  border-color: var(--focus);
-  border-left-color: var(--focus);
+  background: var(--bg-elevated);
+  border-color: var(--border-strong);
 }
 
 .stage-card.is-dimmed {
@@ -204,7 +201,18 @@ a {
 }
 
 .stage-card.is-closed {
-  border-left-color: var(--closed);
+  border-left-color: var(--state-closed);
+}
+
+/* Already reopened: still listed, but it has stopped being actionable. 0.75 is
+   the floor — 0.6 drops the code and the closure time to 3.4:1, under AA. */
+.stage-card.is-reopened {
+  border-left-color: var(--state-reopened);
+  opacity: 0.75;
+}
+
+.stage-card.is-reopened.is-focused {
+  opacity: 1;
 }
 
 .stage-card__head {
@@ -216,7 +224,7 @@ a {
 .stage-card__code {
   font-size: 12px;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
 }
 
@@ -266,19 +274,19 @@ a {
 }
 
 .badge--spectator {
-  border-color: color-mix(in srgb, var(--ok) 50%, transparent);
-  color: var(--ok);
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
 }
 
 .badge--provisional {
   border-style: dashed;
-  border-color: color-mix(in srgb, var(--focus) 50%, transparent);
-  color: var(--focus);
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
 }
 
 .badge--live {
-  border-color: color-mix(in srgb, var(--ok) 60%, transparent);
-  color: var(--ok);
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
 }
 
 /* Time */
@@ -344,7 +352,7 @@ a {
 
 .scrubber__now:hover {
   color: var(--text);
-  border-color: #3a4050;
+  border-color: var(--border-strong);
 }
 
 .app__time-toggle {
@@ -392,27 +400,22 @@ a {
 
 .gantt__row:hover .gantt__row-hit,
 .gantt__row.is-focused .gantt__row-hit {
-  fill: color-mix(in srgb, var(--focus) 12%, transparent);
+  fill: color-mix(in srgb, var(--text-primary) 10%, transparent);
 }
 
 .gantt__row.is-dimmed {
-  opacity: 0.32;
+  opacity: 0.4;
 }
 
 .gantt__bar-label {
-  fill: #12141a;
+  fill: var(--text-secondary);
   font-size: 10px;
   font-weight: 700;
   pointer-events: none;
 }
 
-.gantt__row.is-focused .gantt__bar {
-  stroke: var(--focus);
-  stroke-width: 1.5;
-}
-
 .gantt__now {
-  stroke: var(--focus);
+  stroke: var(--accent);
   stroke-width: 1.5;
   pointer-events: none;
 }
@@ -421,7 +424,7 @@ a {
 
 .detail {
   flex: 1 0 auto;
-  padding: 12px 14px 20px;
+  padding: 12px 14px 24px;
 }
 
 .detail__back {
@@ -456,7 +459,7 @@ a {
 }
 
 .detail__code {
-  color: var(--accent);
+  color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
 }
 
@@ -467,7 +470,7 @@ a {
 }
 
 .detail__section {
-  margin-top: 18px;
+  margin-top: 16px;
 }
 
 .detail__section h3 {
@@ -519,7 +522,7 @@ a {
 
 .detail__more:hover {
   color: var(--text);
-  border-color: #3a4050;
+  border-color: var(--border-strong);
 }
 
 .detail__caveat {
@@ -573,11 +576,11 @@ a {
 }
 
 .detail__notes li + li {
-  margin-top: 5px;
+  margin-top: 6px;
 }
 
 .detail__footer {
-  margin-top: 22px;
+  margin-top: 24px;
   padding-top: 14px;
   border-top: 1px solid var(--border);
 }
@@ -596,7 +599,7 @@ a {
 }
 
 .profile__area {
-  fill: color-mix(in srgb, var(--accent) 10%, transparent);
+  fill: color-mix(in srgb, var(--text-primary) 6%, transparent);
 }
 
 .profile__segment {
@@ -612,13 +615,13 @@ a {
 }
 
 .profile__cursor line {
-  stroke: var(--focus);
+  stroke: var(--accent);
   stroke-width: 1;
   stroke-dasharray: 2 2;
 }
 
 .profile__cursor circle {
-  fill: var(--focus);
+  fill: var(--accent);
   stroke: var(--bg-sunken);
   stroke-width: 2;
 }
@@ -710,7 +713,7 @@ a {
 /* Focus visibility */
 
 :focus-visible {
-  outline: 2px solid var(--focus);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 

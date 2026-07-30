@@ -1,8 +1,9 @@
 import { emphasis } from '../domain/focus'
 import { closuresForDay, stagesForDay } from '../domain/link'
-import { formatClock, isClosedAt, windowOf } from '../domain/time'
+import { formatClock, windowOf } from '../domain/time'
 import type { Focus, RallyYear, StageCode } from '../domain/types'
-import { COLOR } from '../map/layers'
+import { token } from '../tokens'
+import { closureStateAt, type ClosureState } from './closureState'
 import { THUMB_PX } from './TimeScrubber'
 import { useElementSize } from './useElementSize'
 
@@ -10,6 +11,13 @@ const ROW_HEIGHT = 22
 const BAR_HEIGHT = 12
 const AXIS_HEIGHT = 18
 const MIN_TICK_GAP_PX = 46
+const CAP_PX = 4
+
+const STATE_COLOR: Record<ClosureState, string> = {
+  pending: token('--state-pending'),
+  closed: token('--state-closed'),
+  reopened: token('--state-reopened'),
+}
 
 interface Props {
   year: RallyYear
@@ -69,20 +77,19 @@ export function ClosureGantt({ year, day, focus, minutes, onHover, onSelect }: P
         aria-label={`Road closure windows for day ${day}, ${formatClock(from)} to ${formatClock(to)}`}
       >
         <defs>
-          {/* Days 2 and 3 are unconfirmed, so their bars fade out rather than
-              ending on a hard edge that would read as a committed time. */}
-          <linearGradient id="gantt-provisional" x1="0" x2="1">
-            <stop offset="0" stopColor={COLOR.line} stopOpacity="0.15" />
-            <stop offset="0.12" stopColor={COLOR.line} stopOpacity="0.55" />
-            <stop offset="0.88" stopColor={COLOR.line} stopOpacity="0.55" />
-            <stop offset="1" stopColor={COLOR.line} stopOpacity="0.15" />
-          </linearGradient>
-          <linearGradient id="gantt-provisional-closed" x1="0" x2="1">
-            <stop offset="0" stopColor={COLOR.closed} stopOpacity="0.2" />
-            <stop offset="0.12" stopColor={COLOR.closed} stopOpacity="0.8" />
-            <stop offset="0.88" stopColor={COLOR.closed} stopOpacity="0.8" />
-            <stop offset="1" stopColor={COLOR.closed} stopOpacity="0.2" />
-          </linearGradient>
+          {/* Days 2 and 3 are unconfirmed. Their bars end in dashes so that no
+              edge reads as a committed time. */}
+          {(Object.keys(STATE_COLOR) as ClosureState[]).map((s) => (
+            <pattern
+              key={s}
+              id={`gantt-cap-${s}`}
+              width={CAP_PX}
+              height={CAP_PX}
+              patternUnits="userSpaceOnUse"
+            >
+              <rect width={CAP_PX / 2} height={CAP_PX} fill={STATE_COLOR[s]} />
+            </pattern>
+          ))}
         </defs>
 
         {hourTicks(from, to, track).map((tick) => (
@@ -103,20 +110,20 @@ export function ClosureGantt({ year, day, focus, minutes, onHover, onSelect }: P
             : [emphasis(focus, code)]
           const focused = mark.includes('focused')
           const dimmed = mark.every((m) => m === 'dimmed')
-          const closed = isClosedAt(closure, minutes)
+          const closureState = closureStateAt(closure, minutes)
 
-          const fill = closure.confirmed
-            ? closed
-              ? COLOR.closed
-              : COLOR.line
-            : closed
-              ? 'url(#gantt-provisional-closed)'
-              : 'url(#gantt-provisional)'
+          // Pending reads as an empty container waiting to be filled; closed and
+          // reopened are solid. Hue is the only thing carrying state here.
+          const outlined = closureState === 'pending'
+          const barX = x(window.closesAt)
+          const barWidth = Math.max(1, x(window.reopensAt) - barX)
+          const barY = AXIS_HEIGHT + index * ROW_HEIGHT + (ROW_HEIGHT - BAR_HEIGHT) / 2
+          const caps = !closure.confirmed && barWidth > CAP_PX * 3
 
           return (
             <g
               key={closure.id}
-              className={`gantt__row${focused ? ' is-focused' : ''}${dimmed ? ' is-dimmed' : ''}`}
+              className={`gantt__row is-${closureState}${focused ? ' is-focused' : ''}${dimmed ? ' is-dimmed' : ''}${closure.confirmed ? '' : ' is-provisional'}`}
               onMouseEnter={() => onHover(code)}
               onMouseLeave={() => onHover(null)}
               onClick={() => onSelect(code)}
@@ -130,16 +137,35 @@ export function ClosureGantt({ year, day, focus, minutes, onHover, onSelect }: P
               />
               <rect
                 className="gantt__bar"
-                x={x(window.closesAt)}
-                y={AXIS_HEIGHT + index * ROW_HEIGHT + (ROW_HEIGHT - BAR_HEIGHT) / 2}
-                width={Math.max(1, x(window.reopensAt) - x(window.closesAt))}
+                x={caps ? barX + CAP_PX : barX}
+                y={barY}
+                width={caps ? barWidth - CAP_PX * 2 : barWidth}
                 height={BAR_HEIGHT}
-                rx={2}
-                fill={fill}
+                rx={3}
+                fill={outlined ? 'none' : STATE_COLOR[closureState]}
+                stroke={outlined ? STATE_COLOR[closureState] : 'none'}
+                strokeWidth={outlined ? 1 : 0}
               />
+              {caps &&
+                [barX, barX + barWidth - CAP_PX].map((capX) => (
+                  <rect
+                    key={capX}
+                    x={capX}
+                    y={barY}
+                    width={CAP_PX}
+                    height={BAR_HEIGHT}
+                    fill={`url(#gantt-cap-${closureState})`}
+                  />
+                ))}
               <text
                 className="gantt__bar-label"
-                x={x(window.closesAt) + 5}
+                // A presentation attribute loses to the stylesheet's fill, so this
+                // has to be inline style. Filled bars take dark type; the hollow
+                // pending bar has only the panel behind it.
+                style={{
+                  fill: outlined ? token('--text-secondary') : token('--bg-base'),
+                }}
+                x={barX + 5}
                 y={AXIS_HEIGHT + index * ROW_HEIGHT + ROW_HEIGHT / 2 + 3.5}
               >
                 {closure.stageCodes.join(' / ')}

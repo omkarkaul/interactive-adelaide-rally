@@ -3,7 +3,7 @@ import { MapLibreMap, NavigationControl, ScaleControl } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { boundsOf, featuresForDay, stagesForDay, terminiFor } from '../domain/link'
 import { emphasis } from '../domain/focus'
-import { isClosedAt } from '../domain/time'
+import { closureStateAt, combineStates } from '../ui/closureState'
 import type { Focus, RallyYear, StageCode } from '../domain/types'
 import { ADELAIDE_HILLS_CENTER, BASEMAP_STYLE_URL, DEFAULT_ZOOM } from './basemap'
 import { cursorFromPoint, pointFromCursor } from '../domain/cursor'
@@ -201,15 +201,17 @@ export function RallyMap({
         const featureId = feature.properties.featureId
         const owners = stages.filter((s) => s.featureId === featureId)
         const marks = owners.map((s) => emphasis(focus, s.code))
-        const closed = owners.some((s) => {
-          const closure = year.closures.find((c) => c.id === s.closureId)
-          return closure && minutes !== null && isClosedAt(closure, minutes)
-        })
+        const closureState = combineStates(
+          owners.flatMap((s) => {
+            const closure = year.closures.find((c) => c.id === s.closureId)
+            return closure ? [closureStateAt(closure, minutes)] : []
+          }),
+        )
 
         const state = {
           focused: marks.includes('focused'),
           dimmed: marks.length > 0 && marks.every((m) => m === 'dimmed'),
-          closed,
+          closureState,
         }
         instance.setFeatureState({ source: sourceId(d), id: featureId }, state)
         instance.setFeatureState({ source: terminiSourceId(d), id: featureId }, state)
