@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Mockup — elevation profile component</title>
+<style>
+:root{
+--bg-base:#12141a;--bg-panel:#1b1e26;--bg-elevated:#242832;
+--border:#2f3440;--border-strong:#454b5a;
+--text-primary:#eef0f4;--text-secondary:#a2a9b8;--text-muted:#6f7787;
+--accent:#f2733d;--radius:8px;
+--g-up2:#e5484d;--g-up:#f2915d;--g-flat:#7d8798;--g-dn:#6aa9e0;--g-dn2:#3d87d6;
+--mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+--sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:24px;background:var(--bg-base);color:var(--text-primary);font-family:var(--sans);font-size:13px}
+.wrap{max-width:900px;margin:0 auto}
+.picker{display:flex;gap:6px;margin-bottom:14px}
+.picker button{padding:6px 12px;border-radius:var(--radius);border:1px solid var(--border);background:transparent;color:var(--text-secondary);font:inherit;cursor:pointer}
+.picker button[aria-pressed=true]{background:var(--bg-elevated);border-color:var(--border-strong);color:var(--text-primary)}
+.picker .c{font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-right:6px}
+.card{background:var(--bg-panel);border-radius:12px;padding:12px}
+.read{display:flex;gap:18px;font-family:var(--mono);font-size:12px;color:var(--text-secondary);padding:0 2px 8px}
+svg{display:block;width:100%;cursor:crosshair}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);margin-top:14px;border-radius:var(--radius);overflow:hidden}
+.stat{background:var(--bg-panel);padding:10px 12px}
+.stat span{font-size:12px;color:var(--text-muted)}
+.stat b{display:block;font-family:var(--mono);font-size:17px;font-weight:500;margin-top:2px}
+.legend{display:flex;gap:16px;margin-top:14px;font-size:12px;color:var(--text-secondary);flex-wrap:wrap}
+.sw{display:inline-block;width:16px;height:3px;vertical-align:3px;margin-right:6px;border-radius:2px}
+.foot{margin-top:14px;font-size:12px;color:var(--text-muted);line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="picker" id="picker"></div>
+  <div class="card">
+    <div class="read" id="read"><span>hover the profile</span></div>
+    <svg id="prof" viewBox="0 0 860 190"></svg>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--g-up2)"></i>climb &gt;8%</span>
+    <span><i class="sw" style="background:var(--g-up)"></i>climb</span>
+    <span><i class="sw" style="background:var(--g-flat)"></i>flat</span>
+    <span><i class="sw" style="background:var(--g-dn)"></i>descent</span>
+    <span><i class="sw" style="background:var(--g-dn2)"></i>descent &gt;8%</span>
+  </div>
+  <p class="foot">Grade is smoothed over a 200 m window. Raw DEM samples on winding hills roads
+  produce spurious double-digit gradients on switchbacks — SS1 Beaumont reported 29.9% in the first build.
+  Dashed verticals mark the intersections listed in the closure record.</p>
+</div>
+
+<script>
+const S={
+SS4:{n:'Cherryville Plus 1 & 2',len:13.8,cp:[[0,470],[.07,452],[.17,481],[.27,449],[.34,436],[.4,352],[.45,246],[.5,158],[.54,126],[.62,118],[.74,112],[.87,104],[1,97]],ix:[[.13,'Old Cherryville Rd'],[.27,'Montacute Rd'],[.54,'Gorge Rd'],[.83,'Batchelor Rd']]},
+SS6:{n:'Old Norton Summit 1 & 2',len:4.9,cp:[[0,206],[.12,241],[.25,289],[.38,332],[.5,367],[.63,406],[.76,441],[.88,476],[1,499]],ix:[]},
+SS11:{n:'Summit Road',len:3.4,cp:[[0,451],[.16,498],[.32,548],[.48,592],[.64,634],[.8,678],[1,712]],ix:[]}};
+const N=170,W=860,H=190,L=48,R=10,T=12,B=42;
+const $=i=>document.getElementById(i);
+let cur='SS4',ev=[],xs=[],ys=[];
+const col=g=>g>8?'var(--g-up2)':g>2?'var(--g-up)':g<-8?'var(--g-dn2)':g<-2?'var(--g-dn)':'var(--g-flat)';
+function build(k){const s=S[k],r=[];
+ for(let i=0;i<N;i++){const f=i/(N-1);let j=0;while(j<s.cp.length-2&&s.cp[j+1][0]<f)j++;
+  const a=s.cp[j],b=s.cp[j+1],t=Math.min(1,Math.max(0,(f-a[0])/(b[0]-a[0]||1)));r.push(a[1]+(b[1]-a[1])*t)}
+ for(let p=0;p<3;p++)for(let i=1;i<N-1;i++)r[i]=(r[i-1]+r[i]*2+r[i+1])/4;
+ return r}
+function draw(k){cur=k;const s=S[k];ev=build(k);
+ const seg=s.len*1000/(N-1),gr=i=>i?(ev[i]-ev[i-1])/seg*100:0;
+ const mn=Math.min(...ev),mx=Math.max(...ev),pd=(mx-mn)*.16,lo=mn-pd,hi=mx+pd;
+ xs=ev.map((_,i)=>L+(W-L-R)*i/(N-1));ys=ev.map(v=>T+(H-T-B)*(1-(v-lo)/(hi-lo)));
+ let g='';
+ for(let i=0;i<4;i++){const y=T+(H-T-B)*(1-i/3);
+  g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="#2f3440"/><text x="6" y="'+(y+4).toFixed(1)+'" fill="#6f7787" font-size="11">'+Math.round(lo+(hi-lo)*i/3)+'m</text>'}
+ for(let i=0;i<=4;i++)g+='<text x="'+(L+(W-L-R)*i/4).toFixed(1)+'" y="'+(H-20)+'" text-anchor="middle" fill="#6f7787" font-size="11">'+(s.len*i/4).toFixed(1)+'</text>';
+ g+='<text x="'+(W-R)+'" y="'+(H-4)+'" text-anchor="end" fill="#6f7787" font-size="11">distance (km)</text>';
+ g+='<path d="M'+xs[0]+','+(H-B)+' '+xs.map((x,i)=>'L'+x.toFixed(1)+','+ys[i].toFixed(1)).join(' ')+' L'+xs[N-1]+','+(H-B)+' Z" fill="#20242c"/>';
+ g+=xs.slice(1).map((x,i)=>'<line x1="'+xs[i].toFixed(1)+'" y1="'+ys[i].toFixed(1)+'" x2="'+x.toFixed(1)+'" y2="'+ys[i+1].toFixed(1)+'" stroke="'+col(gr(i+1))+'" stroke-width="2.5" stroke-linecap="round"/>').join('');
+ g+=s.ix.map(([f,nm])=>{const x=L+(W-L-R)*f;
+  return '<line x1="'+x.toFixed(1)+'" y1="'+T+'" x2="'+x.toFixed(1)+'" y2="'+(H-B)+'" stroke="#454b5a" stroke-dasharray="2 3"/><text x="'+(x+4).toFixed(1)+'" y="'+(T+11)+'" fill="#6f7787" font-size="10">'+nm+'</text>'}).join('');
+ g+='<line id="cross" y1="'+T+'" y2="'+(H-B)+'" stroke="var(--accent)" opacity="0"/><circle id="pdot" r="5" fill="var(--accent)" stroke="#12141a" stroke-width="2" opacity="0"/>';
+ $('prof').innerHTML=g;
+ let climb=0,desc=0,mg=0;
+ for(let i=1;i<N;i++){const d=ev[i]-ev[i-1];d>0?climb+=d:desc-=d;const v=gr(i);if(Math.abs(v)>Math.abs(mg))mg=v}
+ $('stats').innerHTML=[['length',s.len.toFixed(1)+' km'],['climb','+'+Math.round(climb)+' m'],['descent','−'+Math.round(desc)+' m'],['max grade',(mg>0?'+':'')+mg.toFixed(1)+'%'],['net',(ev[N-1]-ev[0]>0?'+':'−')+Math.abs(Math.round(ev[N-1]-ev[0]))+' m']]
+  .map(([a,b])=>'<div class="stat"><span>'+a+'</span><b>'+b+'</b></div>').join('');
+ document.querySelectorAll('#picker button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));
+ at(null)}
+function at(i){const c=$('cross'),d=$('pdot'),s=S[cur];
+ if(i==null){c.setAttribute('opacity',0);d.setAttribute('opacity',0);$('read').innerHTML='<span>hover the profile</span>';return}
+ c.setAttribute('x1',xs[i]);c.setAttribute('x2',xs[i]);c.setAttribute('opacity',.6);
+ d.setAttribute('cx',xs[i]);d.setAttribute('cy',ys[i]);d.setAttribute('opacity',1);
+ const seg=s.len*1000/(N-1),v=i?(ev[i]-ev[i-1])/seg*100:0;
+ $('read').innerHTML='<span><span style="color:#6f7787">km</span> '+(s.len*i/(N-1)).toFixed(2)+'</span><span><span style="color:#6f7787">elev</span> '+Math.round(ev[i])+' m</span><span><span style="color:#6f7787">grade</span> '+(v>0?'+':'')+v.toFixed(1)+'%</span>'}
+$('picker').innerHTML=Object.entries(S).map(([k,v])=>'<button data-k="'+k+'"><span class="c">'+k+'</span>'+v.n.replace(' 1 & 2','')+'</button>').join('');
+document.querySelectorAll('#picker button').forEach(b=>b.onclick=()=>draw(b.dataset.k));
+$('prof').addEventListener('mousemove',e=>{const r=$('prof').getBoundingClientRect();
+ const f=((e.clientX-r.left)/r.width*W-L)/(W-L-R);at(f<0||f>1?null:Math.round(f*(N-1)))});
+$('prof').addEventListener('mouseleave',()=>at(null));
+draw('SS4');
+</script>
+</body>
+</html>

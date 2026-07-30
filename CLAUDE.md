@@ -26,3 +26,9 @@
 - For exploratory questions, give a 2–3 sentence recommendation with the main tradeoff.
 - Don't implement until I agree on the approach.
 - For simple tasks, act — don't narrate options.
+
+## This project
+- Plans: `docs/plans/`. Design rules: `docs/design/design-spec.md`. Reference mockups: `docs/design/mockups/`.
+- Any UI, layout, colour or responsive work must follow the `rally-ui` skill in `.claude/skills/`. Read the design spec before changing anything under `src/ui/` or `src/map/`.
+- Never claim a visual change is done without running `npm run shots` and looking at the images.
+- `src/domain/**` imports nothing from React, MapLibre or the DOM.

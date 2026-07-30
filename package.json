@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "ingest": "tsx scripts/ingest-kml.ts",
     "enrich": "tsx scripts/enrich-elevation.ts",
-    "verify": "tsx scripts/verify-data.ts"
+    "verify": "tsx scripts/verify-data.ts",
+    "shots": "node scripts/shots.mjs"
   },
   "dependencies": {
     "maplibre-gl": "^6.0.0",
@@ -35,6 +36,7 @@
     "@vitejs/plugin-react": "^6.0.3",
     "fast-xml-parser": "^4.5.1",
     "jsdom": "^26.0.0",
+    "playwright": "^1.62.0",
     "pngjs": "^7.0.0",
     "tsx": "^4.19.2",
     "typescript": "~6.0.2",

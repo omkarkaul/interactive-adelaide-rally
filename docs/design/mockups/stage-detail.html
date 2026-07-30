@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Mockup — stage detail, desktop</title>
+<style>
+:root{
+--bg-base:#12141a;--bg-panel:#1b1e26;--bg-elevated:#242832;
+--border:#2f3440;--border-strong:#454b5a;
+--text-primary:#eef0f4;--text-secondary:#a2a9b8;--text-muted:#6f7787;
+--state-pending:#7d8798;--state-closed:#e5484d;--state-closed-text:#ff8b8e;--state-reopened:#3f4654;
+--accent:#f2733d;--radius:8px;
+--g-up2:#e5484d;--g-up:#f2915d;--g-flat:#7d8798;--g-dn:#6aa9e0;--g-dn2:#3d87d6;
+--mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+--sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg-base);color:var(--text-primary);font-family:var(--sans);font-size:13px;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+header{height:56px;flex:none;display:flex;align-items:center;padding:0 16px;background:var(--bg-panel);border-bottom:1px solid var(--border)}
+h1{font-size:18px;font-weight:500;margin:0}
+.sub{font-size:12px;color:var(--text-muted)}
+main{flex:1;display:flex;min-height:0}
+#panel{width:380px;flex:none;background:var(--bg-panel);border-right:1px solid var(--border);overflow-y:auto}
+.back{display:block;padding:12px 14px 0;color:var(--text-secondary);font-size:12px;text-decoration:none}
+.sect{padding:11px 14px;border-bottom:1px solid var(--border)}
+.lab{font-size:12px;color:var(--text-muted);margin-bottom:3px}
+.val{font-size:13px;line-height:1.6}
+.code{font-family:var(--mono);font-size:12px;color:var(--text-secondary)}
+.nm{font-size:18px;font-weight:500;margin:2px 0 0}
+.win{font-family:var(--mono);font-size:20px;font-weight:500;color:var(--state-closed-text)}
+.badge{font-size:11px;padding:2px 8px;border-radius:var(--radius);background:#2a1f12;color:#f0b878;margin-left:8px}
+.note{display:flex;gap:9px;font-size:12px;color:var(--text-secondary);line-height:1.55}
+.warn{background:#2a1416;border-bottom:1px solid var(--border);padding:11px 14px;font-size:12px;line-height:1.55;color:#ffb3b5}
+#right{flex:1;display:flex;flex-direction:column;min-width:0}
+#mapwrap{flex:1;background:#171b22;min-height:0}
+#profwrap{flex:none;height:210px;background:var(--bg-panel);border-top:1px solid var(--border);padding:8px 12px}
+.read{display:flex;gap:18px;font-family:var(--mono);font-size:12px;color:var(--text-secondary);padding:0 2px 6px}
+svg{display:block;width:100%}
+.strip{flex:none;height:38px;display:flex;align-items:center;gap:14px;padding:0 16px;background:var(--bg-panel);border-top:1px solid var(--border);font-size:12px;color:var(--text-secondary)}
+.sw{display:inline-block;width:14px;height:3px;vertical-align:3px;margin-right:5px;border-radius:2px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.stat{background:var(--bg-panel);padding:9px 12px}
+.stat b{display:block;font-family:var(--mono);font-size:16px;font-weight:500}
+</style>
+</head>
+<body>
+
+<header><div><h1>2026 Shannons Adelaide Rally</h1><div class="sub">Stages and road closures</div></div></header>
+
+<main>
+  <div id="panel">
+    <a class="back" href="#">← All day 1 stages</a>
+    <div class="sect">
+      <div class="code">SS4 + SS7 · day 1</div>
+      <div class="nm">Cherryville Plus 1 &amp; 2</div>
+      <div style="margin-top:8px"><span class="win">09:10–17:10</span><span class="badge">confirmed</span></div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:2px">approximate · may run late</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><span class="lab">length</span><b>13.8 km</b></div>
+      <div class="stat"><span class="lab">descent</span><b>−408 m</b></div>
+      <div class="stat"><span class="lab">max grade</span><b>−11.4%</b></div>
+    </div>
+    <div class="sect"><div class="lab">roads closed</div><div class="val">Marble Hill Rd, Montacute Rd, Corkscrew Rd, Gorge Rd</div></div>
+    <div class="sect" style="display:flex;gap:16px">
+      <div style="flex:1"><div class="lab">closure start</div><div class="val">Tembys Rd / Marble Hill Rd</div></div>
+      <div style="flex:1"><div class="lab">closure finish</div><div class="val">Prairie Rd / Gorge Rd</div></div>
+    </div>
+    <div class="sect"><div class="lab">intersections along stage · 9</div><div class="val">Old Cherryville Rd, Cherryville Rd, Narrow Range Rd, Hill Rd, Montacute Rd, Church Rd, Valley Rd, Gorge Rd, Batchelor Rd</div></div>
+    <div class="sect"><div class="note">Run twice — as SS4, then again as SS7. The road stays closed between runs.</div></div>
+    <div class="warn">Never enter a closed stage, regardless of published times. Long gaps between cars don't mean it's safe. Wait for officials to remove tape.</div>
+    <div class="sect" style="border:0"><div class="lab">Source: adelaiderally.com.au · captured 29 Jul 2026</div></div>
+  </div>
+
+  <div id="right">
+    <div id="mapwrap">
+      <svg id="map" viewBox="0 0 900 420" preserveAspectRatio="xMidYMid slice" style="height:100%">
+        <path d="M420 340 C480 362 540 328 620 352 C700 376 740 336 900 358" stroke="#1e3247" stroke-width="7" fill="none"/>
+        <g stroke="#22272f" stroke-width="1" fill="none"><path d="M0 140 C180 128 300 152 470 138 C640 124 760 144 900 136"/><path d="M300 0 L288 200 L304 420"/></g>
+        <path id="route" d="M60 90 C110 76 138 112 182 100 C230 87 256 126 306 122 C348 119 368 92 405 106 C433 117 450 132 442 148 C433 166 400 162 394 181 C388 200 428 207 425 224 C422 242 386 242 383 261 C380 280 422 286 422 304 C422 325 470 341 510 330 C554 318 571 351 619 348 C670 345 687 314 735 320 C789 327 803 356 858 348" fill="none" stroke="none"/>
+        <g id="grade" stroke-width="6" stroke-linecap="round" fill="none"></g>
+        <g id="arrows"></g>
+        <g id="pins"></g>
+        <circle id="mdot" r="8" fill="var(--accent)" stroke="#12141a" stroke-width="3" opacity="0"/>
+      </svg>
+    </div>
+    <div id="profwrap">
+      <div class="read" id="read"><span>move over the map or the profile — the cursor tracks both</span></div>
+      <svg id="prof" viewBox="0 0 900 150" style="cursor:crosshair">
+        <g id="grid"></g>
+        <path id="area" fill="#20242c"/>
+        <g id="segs" stroke-width="2.5" fill="none" stroke-linecap="round"></g>
+        <g id="ixg"></g>
+        <line id="cross" y1="10" y2="112" stroke="var(--accent)" stroke-width="1" opacity="0"/>
+        <circle id="pdot" r="5" fill="var(--accent)" stroke="#12141a" stroke-width="2" opacity="0"/>
+      </svg>
+    </div>
+    <div class="strip">
+      <span style="color:var(--text-muted)">closure timeline collapsed while a stage is open</span>
+      <span style="margin-left:auto"><i class="sw" style="background:var(--g-up2)"></i>climb</span>
+      <span><i class="sw" style="background:var(--g-flat)"></i>flat</span>
+      <span><i class="sw" style="background:var(--g-dn2)"></i>descent &gt;8%</span>
+    </div>
+  </div>
+</main>
+
+<script>
+const CP=[[0,470],[.07,452],[.17,481],[.27,449],[.34,436],[.4,352],[.45,246],[.5,158],[.54,126],[.62,118],[.74,112],[.87,104],[1,97]];
+const IX=[[.13,'Old Cherryville Rd'],[.27,'Montacute Rd'],[.54,'Gorge Rd'],[.83,'Batchelor Rd']];
+const KM=13.8,N=170,W=900,H=150,L=44,R=10,T=10,B=36;
+const $=i=>document.getElementById(i),P=$('route'),LEN=P.getTotalLength();
+const ev=[];
+for(let i=0;i<N;i++){const f=i/(N-1);let j=0;while(j<CP.length-2&&CP[j+1][0]<f)j++;
+ const a=CP[j],b=CP[j+1],t=Math.min(1,Math.max(0,(f-a[0])/(b[0]-a[0]||1)));ev.push(a[1]+(b[1]-a[1])*t)}
+for(let k=0;k<3;k++)for(let i=1;i<N-1;i++)ev[i]=(ev[i-1]+ev[i]*2+ev[i+1])/4;
+const seg=KM*1000/(N-1),gr=i=>i?(ev[i]-ev[i-1])/seg*100:0;
+const col=g=>g>8?'var(--g-up2)':g>2?'var(--g-up)':g<-8?'var(--g-dn2)':g<-2?'var(--g-dn)':'var(--g-flat)';
+const S=[];for(let i=0;i<N;i++)S.push(P.getPointAtLength(LEN*i/(N-1)));
+$('grade').innerHTML=S.slice(1).map((q,i)=>'<line x1="'+S[i].x.toFixed(1)+'" y1="'+S[i].y.toFixed(1)+'" x2="'+q.x.toFixed(1)+'" y2="'+q.y.toFixed(1)+'" stroke="'+col(gr(i+1))+'"/>').join('');
+$('arrows').innerHTML=[.07,.22,.45,.7,.93].map(f=>{const i=Math.round(f*(N-1)),a=S[Math.max(0,i-3)],b=S[Math.min(N-1,i+3)];
+ const d=Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI;
+ return '<path d="M-5,-4 L5,0 L-5,4 Z" fill="#eef0f4" opacity=".55" transform="translate('+S[i].x.toFixed(1)+','+S[i].y.toFixed(1)+') rotate('+d.toFixed(1)+')"/>'}).join('');
+$('pins').innerHTML=IX.map(([f,nm])=>{const q=S[Math.round(f*(N-1))];
+ return '<circle cx="'+q.x.toFixed(1)+'" cy="'+q.y.toFixed(1)+'" r="3.5" fill="#12141a" stroke="#a2a9b8" stroke-width="1.5"/><text x="'+(q.x+8).toFixed(1)+'" y="'+(q.y-7).toFixed(1)+'" fill="#a2a9b8" font-size="11">'+nm+'</text>'}).join('')
+ +'<circle cx="'+S[0].x+'" cy="'+S[0].y+'" r="6" fill="#4ac48a"/><text x="'+(S[0].x+11)+'" y="'+(S[0].y-8)+'" fill="#eef0f4" font-size="12">start · Tembys Rd</text>'
+ +'<circle cx="'+S[N-1].x+'" cy="'+S[N-1].y+'" r="6" fill="#e5484d"/><text x="'+(S[N-1].x-9)+'" y="'+(S[N-1].y+20)+'" text-anchor="end" fill="#eef0f4" font-size="12">finish · Prairie Rd</text>';
+const mn=Math.min(...ev),mx=Math.max(...ev),pd=(mx-mn)*.15,lo=mn-pd,hi=mx+pd;
+const xs=ev.map((_,i)=>L+(W-L-R)*i/(N-1)),ys=ev.map(v=>T+(H-T-B)*(1-(v-lo)/(hi-lo)));
+let g='';
+for(let i=0;i<4;i++){const y=T+(H-T-B)*(1-i/3);
+ g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="#2f3440"/><text x="6" y="'+(y+4).toFixed(1)+'" fill="#6f7787" font-size="11" font-family="var(--mono)">'+Math.round(lo+(hi-lo)*i/3)+'m</text>'}
+for(let i=0;i<=4;i++)g+='<text x="'+(L+(W-L-R)*i/4).toFixed(1)+'" y="'+(H-18)+'" text-anchor="middle" fill="#6f7787" font-size="11" font-family="var(--mono)">'+(KM*i/4).toFixed(1)+'</text>';
+g+='<text x="'+(W-R)+'" y="'+(H-3)+'" text-anchor="end" fill="#6f7787" font-size="11">distance (km)</text>';
+$('grid').innerHTML=g;
+$('area').setAttribute('d','M'+xs[0]+','+(H-B)+' '+xs.map((x,i)=>'L'+x.toFixed(1)+','+ys[i].toFixed(1)).join(' ')+' L'+xs[N-1]+','+(H-B)+' Z');
+$('segs').innerHTML=xs.slice(1).map((x,i)=>'<line x1="'+xs[i].toFixed(1)+'" y1="'+ys[i].toFixed(1)+'" x2="'+x.toFixed(1)+'" y2="'+ys[i+1].toFixed(1)+'" stroke="'+col(gr(i+1))+'"/>').join('');
+$('ixg').innerHTML=IX.map(([f,nm])=>{const x=L+(W-L-R)*f;
+ return '<line x1="'+x.toFixed(1)+'" y1="'+T+'" x2="'+x.toFixed(1)+'" y2="'+(H-B)+'" stroke="#454b5a" stroke-dasharray="2 3"/><text x="'+(x+4).toFixed(1)+'" y="'+(T+10)+'" fill="#6f7787" font-size="10">'+nm+'</text>'}).join('');
+function at(i){
+ if(i==null){$('mdot').setAttribute('opacity',0);$('pdot').setAttribute('opacity',0);$('cross').setAttribute('opacity',0);
+  $('read').innerHTML='<span>move over the map or the profile — the cursor tracks both</span>';return}
+ const q=S[i];$('mdot').setAttribute('cx',q.x);$('mdot').setAttribute('cy',q.y);$('mdot').setAttribute('opacity',1);
+ $('pdot').setAttribute('cx',xs[i]);$('pdot').setAttribute('cy',ys[i]);$('pdot').setAttribute('opacity',1);
+ $('cross').setAttribute('x1',xs[i]);$('cross').setAttribute('x2',xs[i]);$('cross').setAttribute('opacity',.5);
+ const v=gr(i);
+ $('read').innerHTML='<span style="color:#6f7787">km</span> '+(KM*i/(N-1)).toFixed(2)+
+  ' <span style="color:#6f7787">elev</span> '+Math.round(ev[i])+' m'+
+  ' <span style="color:#6f7787">grade</span> '+(v>0?'+':'')+v.toFixed(1)+'%'+
+  ' <span style="color:#6f7787">to finish</span> '+(KM*(1-i/(N-1))).toFixed(2)+' km';
+}
+let prev=null;
+$('map').addEventListener('mousemove',e=>{const r=$('map').getBoundingClientRect();
+ const sx=900/r.width,sy=420/r.height,mx=(e.clientX-r.left)*sx,my=(e.clientY-r.top)*sy;
+ let bi=0,bd=1e9;
+ for(let i=0;i<N;i++){const dx=S[i].x-mx,dy=S[i].y-my;let d=dx*dx+dy*dy;
+  if(prev!=null)d+=Math.abs(i-prev)*0.9;
+  if(d<bd){bd=d;bi=i}}
+ const dx=S[bi].x-mx,dy=S[bi].y-my;
+ if(dx*dx+dy*dy>3600){prev=null;return at(null)}
+ prev=bi;at(bi)});
+$('map').addEventListener('mouseleave',()=>{prev=null;at(null)});
+$('prof').addEventListener('mousemove',e=>{const r=$('prof').getBoundingClientRect();
+ const f=((e.clientX-r.left)/r.width*W-L)/(W-L-R);
+ if(f<0||f>1)return at(null);prev=Math.round(f*(N-1));at(prev)});
+$('prof').addEventListener('mouseleave',()=>{prev=null;at(null)});
+</script>
+</body>
+</html>
