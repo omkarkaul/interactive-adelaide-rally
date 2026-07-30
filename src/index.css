@@ -544,6 +544,10 @@ a {
   font-variant-numeric: tabular-nums;
 }
 
+.detail__window-label.is-closed {
+  color: var(--state-closed-text);
+}
+
 .detail__window-label {
   font-size: 12px;
   color: var(--text-dim);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { closureStateAt, combineStates } from './closureState'
+import { closureLabel, closureStateAt, combineStates } from './closureState'
 import { parseClock } from '../domain/time'
 import type { Closure } from '../domain/types'
 
@@ -55,5 +55,31 @@ describe('combineStates', () => {
 
   it('falls back to pending when nothing owns the line', () => {
     expect(combineStates([])).toBe('pending')
+  })
+})
+
+describe('closureLabel', () => {
+  const label = (clock: string) => closureLabel(ss1, parseClock(clock))
+
+  // The detail header used to read "road closed" at every time of day, so at
+  // 07:45 it asserted a road was shut that did not close for another 85 minutes,
+  // while the timeline below it drew the same closure as not yet closed.
+  it('says when the road closes, before it closes', () => {
+    expect(label('06:00')).toBe('closes 07:45')
+    expect(label('07:44')).toBe('closes 07:45')
+  })
+
+  it('says the road is closed only while it is closed', () => {
+    expect(label('07:45')).toBe('closed now')
+    expect(label('12:44')).toBe('closed now')
+  })
+
+  it('says when the road reopened, once it has', () => {
+    expect(label('12:45')).toBe('reopened 12:45')
+    expect(label('18:00')).toBe('reopened 12:45')
+  })
+
+  it('falls back to a neutral description when there is no time to judge against', () => {
+    expect(closureLabel(ss1, null)).toBe('road closed')
   })
 })

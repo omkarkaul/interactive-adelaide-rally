@@ -191,6 +191,7 @@ export default function App({
             <StageDetail
               year={year}
               detail={detail}
+              minutes={minutes}
               cursor={cursor}
               onCursor={setCursor}
               onBack={onBack}

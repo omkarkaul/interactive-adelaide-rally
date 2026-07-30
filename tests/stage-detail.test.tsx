@@ -1,5 +1,6 @@
-import { act, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { parseClock } from '../src/domain/time'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../src/App'
 import { loadYear } from '../src/domain/load'
@@ -137,6 +138,28 @@ describe('stage detail view', () => {
       'href',
       expect.stringContaining('google.com/maps/d/viewer?mid='),
     )
+  })
+
+  // The header used to read "road closed" whatever the time, so it contradicted
+  // the timeline on the same screen and told people a road was shut 85 minutes
+  // before it was.
+  it('states what the road is doing at the scrubbed time, not just that it closes', async () => {
+    await userEvent.click(card('SS4'))
+    const setTime = (clock: string) =>
+      fireEvent.change(screen.getByRole('slider', { name: /time of day/i }), {
+        target: { value: String(parseClock(clock)) },
+      })
+
+    setTime('08:00')
+    expect(screen.getByText('closes 09:10')).toBeInTheDocument()
+    expect(screen.queryByText('closed now')).not.toBeInTheDocument()
+
+    setTime('12:00')
+    expect(screen.getByText('closed now')).toBeInTheDocument()
+
+    setTime('18:00')
+    expect(screen.getByText('reopened 17:10')).toBeInTheDocument()
+    expect(screen.queryByText('closed now')).not.toBeInTheDocument()
   })
 
   it('marks an unconfirmed window as provisional in the detail view', async () => {

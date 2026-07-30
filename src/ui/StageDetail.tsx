@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { formatWindow } from '../domain/time'
+import { closureLabel, closureStateAt } from './closureState'
 import type { Cursor, RallyYear, StageDetail as StageDetailModel } from '../domain/types'
 import { ElevationProfile } from './ElevationProfile'
 import { GRADE_LEGEND, gradeColor } from './grade'
@@ -8,6 +9,7 @@ import { SafetyNotice, SourceNotice } from './SafetyNotice'
 interface Props {
   year: RallyYear
   detail: StageDetailModel
+  minutes: number | null
   cursor: Cursor | null
   onCursor: (cursor: Cursor | null) => void
   onBack: () => void
@@ -50,7 +52,7 @@ function List({ title, items }: { title: string; items: string[] }) {
   )
 }
 
-export function StageDetail({ year, detail, cursor, onCursor, onBack }: Props) {
+export function StageDetail({ year, detail, minutes, cursor, onCursor, onBack }: Props) {
   const { closure, profile, spectator } = detail
   const repeatRuns = detail.runsAs.length > 1
   const source = year.sources.find((s) => s.mid === detail.line.properties.sourceMid)
@@ -72,7 +74,9 @@ export function StageDetail({ year, detail, cursor, onCursor, onBack }: Props) {
         </p>
         <p className="detail__window">
           <span className="detail__window-clock">{formatWindow(closure)}</span>
-          <span className="detail__window-label">road closed</span>
+          <span className={`detail__window-label is-${closureStateAt(closure, minutes)}`}>
+            {closureLabel(closure, minutes)}
+          </span>
           {!closure.confirmed && <span className="badge badge--provisional">Provisional</span>}
         </p>
         {!closure.confirmed && (
