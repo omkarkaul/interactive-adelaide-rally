@@ -51,8 +51,12 @@ Scale: 4, 6, 8, 10, 12, 14, 16, 24
 ```
 --text-primary    #eef0f4
 --text-secondary  #a2a9b8
---text-muted      #6f7787
+--text-muted      #8189a0
 ```
+
+All three clear 4.5:1 on both `--bg-base` and `--bg-panel`. `--text-muted` was
+`#6f7787`, which reached only 3.7:1 on the panel — a token that fails wherever it
+is used for type is a trap, not a shade.
 
 ### State — closure
 

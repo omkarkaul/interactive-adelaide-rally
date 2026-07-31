@@ -98,9 +98,16 @@ a {
 }
 
 .app__map {
-  position: relative;
+  display: flex;
+  flex-direction: column;
   flex: 1;
   min-width: 0;
+}
+
+.app__map-canvas {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 /* MapLibre puts .maplibregl-map on this element and its own stylesheet, which
@@ -109,6 +116,31 @@ a {
 .app__map .rally-map {
   position: absolute;
   inset: 0;
+}
+
+/* The profile sits with the map, not in the panel: at 360px it had no room to
+   show a gradient and the stat strip broke into ragged rows. */
+.profile-panel {
+  flex: 0 0 auto;
+  padding: 10px 16px 12px;
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border);
+}
+
+.profile-panel__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+}
+
+.profile-panel .stat-strip {
+  margin: 0 0 8px;
+}
+
+.profile-panel .detail__caveat {
+  margin: 0;
 }
 
 /* MapLibre ships its controls white, which on a dark basemap makes the
@@ -784,6 +816,10 @@ a {
   gap: 4px;
 }
 
+.grade-legend__title {
+  color: var(--text-muted);
+}
+
 .grade-legend i {
   width: 10px;
   height: 10px;
@@ -873,21 +909,82 @@ a {
     flex-direction: column-reverse;
   }
 
+  /* The map column carries the profile too once a stage is open, so the height
+     belongs to the canvas rather than to the column. Fixed on the column, the
+     profile squeezed the canvas to nothing and the map vanished. */
   .app__map {
-    flex: 0 0 32vh;
-    min-height: 200px;
+    flex: 0 0 auto;
   }
 
+  .app__map-canvas {
+    flex: 0 0 32vh;
+    min-height: 180px;
+  }
+
+  /* A bottom sheet: the height is driven by the drag handle, and the map keeps
+     whatever is left rather than the two competing for a fixed split. */
   .app__panel {
     width: 100%;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     border-right: none;
     border-top: 1px solid var(--border);
-    border-radius: 12px 12px 0 0;
+    border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
+  }
+
+  .sheet-handle {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    /* 24px of grip is under the 44px a thumb wants, so the target is padded out
+       around it rather than the bar itself being drawn that tall. */
+    height: 24px;
+    padding: 14px 0;
+    margin-bottom: -14px;
+    background: var(--bg-panel);
+    border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .sheet-handle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+
+  .sheet-handle__grip {
+    width: 36px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--border-strong);
   }
 
   .app__time {
     padding: 8px 12px calc(10px + env(safe-area-inset-bottom));
+  }
+
+  /* Five tiles cannot fit one row at 390px without wrapping "19.65 km" and
+     "Max grade", and five will not divide into an even grid. The spec says
+     reduce the column count, so Net goes — it is the only one the reader can
+     derive from the others. */
+  .stat-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stat--net {
+    display: none;
+  }
+
+  .stat {
+    padding: 6px 8px;
+  }
+
+  .stat__label {
+    text-transform: none;
+    letter-spacing: 0;
   }
 
   /* Coarse pointers need a bigger target than a 12px range thumb. The compact

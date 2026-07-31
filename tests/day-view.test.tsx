@@ -90,18 +90,21 @@ describe('day view', () => {
     expect(stateOf(map, 'cherryville-plus')).toMatchObject({ focused: true })
   })
 
-  it('fits the day on load and the stage on select, padding for the panel', async () => {
+  // The padding used to be asymmetric, adding the panel's width on the left. The
+  // panel is a flex sibling rather than an overlay, so the map element already
+  // excludes it and that only pushed the selected stage off-centre.
+  it('fits the day on load and the selected stage on select, centred either way', async () => {
     map.fitBounds.mockClear()
     await userEvent.click(card('SS4'))
 
     const [bounds, options] = map.fitBounds.mock.calls.at(-1)!
     expect(bounds).toHaveLength(4)
-    expect(options.padding.left).toBeGreaterThan(options.padding.right)
+    expect(options.padding).toBe(48)
 
     map.fitBounds.mockClear()
     await userEvent.click(screen.getByRole('button', { name: /All day 1 stages/ }))
     const [dayBounds, dayOptions] = map.fitBounds.mock.calls.at(-1)!
-    expect(dayOptions.padding.left).toBe(dayOptions.padding.right)
+    expect(dayOptions.padding).toBe(48)
     expect(dayBounds[2] - dayBounds[0]).toBeGreaterThan(bounds[2] - bounds[0])
   })
 

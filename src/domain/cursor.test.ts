@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Feature, LineString } from 'geojson'
 import { cumulativeDistancesKm, cursorFromPoint, pointFromCursor } from './cursor'
+import dayOneRaw from '../../data/2026/geometry/day-1.geojson?raw'
 
 const line = (coordinates: number[][]): Feature<LineString> => ({
   type: 'Feature',
@@ -101,5 +102,46 @@ describe('pointFromCursor', () => {
     const [lon, lat] = pointFromCursor(straight, cursor)
     expect(lon).toBeCloseTo(original[0], 4)
     expect(lat).toBeCloseTo(original[1], 4)
+  })
+})
+
+// The synthetic hairpin above is a fair model, but the Corkscrew is the road that
+// motivated the continuity bias: a dozen switchbacks where the opposing leg is
+// closer to the pointer than the leg the cursor is already on.
+describe('the Corkscrew, from the real geometry', () => {
+  const collection = JSON.parse(dayOneRaw) as {
+    features: Feature<LineString, { featureId: string }>[]
+  }
+  const corkscrew = collection.features.find((f) => f.properties.featureId === 'cherryville-plus')!
+
+  it('is the stage with the hairpins, and carries elevation', () => {
+    expect(corkscrew).toBeDefined()
+    expect(corkscrew.geometry.coordinates.length).toBeGreaterThan(100)
+  })
+
+  it('never runs backwards while the pointer walks the line', () => {
+    const coordinates = corkscrew.geometry.coordinates
+    let cursor = cursorFromPoint('SS4', corkscrew, coordinates[0] as [number, number])
+    let regressions = 0
+
+    for (const coordinate of coordinates.slice(1)) {
+      const next = cursorFromPoint('SS4', corkscrew, coordinate as [number, number], cursor)
+      if (next.distanceKm < cursor.distanceKm - 0.02) regressions++
+      cursor = next
+    }
+
+    expect(regressions).toBe(0)
+  })
+
+  // Without the bias the marker jumps to whichever leg is marginally nearer, which
+  // on a switchback is the one the driver has not reached yet.
+  it('stays on the leg it is already on when both are within reach', () => {
+    const coordinates = cumulativeDistancesKm(corkscrew.geometry.coordinates)
+    const total = coordinates.at(-1)!
+    const midway = { code: 'SS4' as const, distanceKm: total / 2 }
+    const point = pointFromCursor(corkscrew, midway) as [number, number]
+
+    const held = cursorFromPoint('SS4', corkscrew, point, midway)
+    expect(held.distanceKm).toBeCloseTo(midway.distanceKm, 2)
   })
 })

@@ -18,6 +18,17 @@ vi.mock('maplibre-gl', async () => {
 const card = (code: string) => screen.getByRole('button', { name: new RegExp(`^${code}\\b`) })
 const profile = () => screen.getByRole('slider', { name: /Elevation profile/ })
 
+// Two jsdom quirks at once: there is no PointerEvent, so pointerType has to be
+// defined by hand or the guard under test never sees it; and React derives
+// onPointerLeave from a native pointerout, so dispatching pointerleave does
+// nothing at all.
+function pointerLeave(pointerType: string) {
+  const event = new Event('pointerout', { bubbles: true })
+  Object.defineProperty(event, 'pointerType', { value: pointerType })
+  Object.defineProperty(event, 'relatedTarget', { value: document.body })
+  return event
+}
+
 async function mount(search = '', persistUrl = false) {
   maps.length = 0
   render(<App search={search} persistUrl={persistUrl} />)
@@ -73,6 +84,30 @@ describe('keyboard', () => {
 
     await userEvent.keyboard('{ArrowLeft}')
     expect(Number(profile().getAttribute('aria-valuenow'))).toBeLessThan(after)
+  })
+
+  // Releasing pointer capture fires pointerleave straight after pointerup on a
+  // touch device, which used to wipe the reading the tap had just placed. Only a
+  // mouse leaving the plot should clear it.
+  it('keeps the reading a finger placed, and clears one a mouse leaves behind', async () => {
+    await userEvent.click(card('SS4'))
+    const svg = profile()
+
+    fireEvent.pointerDown(svg, { pointerId: 1, clientX: 120 })
+    fireEvent.pointerUp(svg, { pointerId: 1, clientX: 120 })
+    fireEvent(svg, pointerLeave('touch'))
+    expect(profile().getAttribute('aria-valuetext')).not.toMatch(/Hover, drag/)
+  })
+
+  it('still clears the reading when a mouse leaves the plot', async () => {
+    await userEvent.click(card('SS4'))
+    const svg = profile()
+
+    fireEvent.pointerMove(svg, { pointerId: 3, clientX: 120 })
+    expect(profile().getAttribute('aria-valuetext')).not.toMatch(/Hover, drag/)
+
+    fireEvent(svg, pointerLeave('mouse'))
+    expect(profile().getAttribute('aria-valuetext')).toMatch(/Hover, drag/)
   })
 
   it('takes a shift-arrow in coarser steps and jumps to the ends', async () => {

@@ -5,7 +5,8 @@ import { gradeColor } from './grade'
 import { useElementSize } from './useElementSize'
 
 const HEIGHT = 132
-const PAD = { top: 10, right: 8, bottom: 20, left: 34 }
+// left fits a four-digit metre value plus its unit: "1234 m" at 11px.
+const PAD = { top: 10, right: 8, bottom: 20, left: 52 }
 const MAX_SEGMENTS = 320
 
 interface Props {
@@ -138,10 +139,11 @@ export function ElevationProfile({ code, profile, cursor, onCursor }: Props) {
         onPointerCancel={() => {
           dragging.current = false
         }}
-        // Leaving clears a hover, but must not wipe the reading a finger just
-        // dragged to the edge and lifted.
-        onPointerLeave={() => {
-          if (!dragging.current) onCursor(null)
+        // Leaving clears a hover, but only a real hover. Releasing pointer
+        // capture fires this straight after pointerup on touch, which wiped the
+        // reading the tap had just set.
+        onPointerLeave={(event) => {
+          if (!dragging.current && event.pointerType === 'mouse') onCursor(null)
         }}
       >
         <path className="profile__area" d={area} />
@@ -152,7 +154,7 @@ export function ElevationProfile({ code, profile, cursor, onCursor }: Props) {
 
         {[minM, (minM + maxM) / 2, maxM].map((m) => (
           <text key={m} className="profile__axis" x={PAD.left - 5} y={y(m) + 3} textAnchor="end">
-            {Math.round(m)}
+            {Math.round(m)} m
           </text>
         ))}
 

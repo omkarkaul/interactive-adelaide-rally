@@ -1,27 +1,18 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { formatWindow } from '../domain/time'
 import { closureLabel, closureStateAt } from './closureState'
-import type { Cursor, RallyYear, StageDetail as StageDetailModel } from '../domain/types'
-import { ElevationProfile } from './ElevationProfile'
-import { GRADE_LEGEND, gradeColor } from './grade'
+import type { RallyYear, StageDetail as StageDetailModel } from '../domain/types'
 import { SafetyNotice, SourceNotice } from './SafetyNotice'
 
 interface Props {
   year: RallyYear
   detail: StageDetailModel
   minutes: number | null
-  cursor: Cursor | null
-  onCursor: (cursor: Cursor | null) => void
+  // On a narrow viewport the profile belongs inside the card, straight after the
+  // header. Under the map it pushed the closure window below the fold, and that
+  // window is the question people opened the stage to answer.
+  profile?: ReactNode
   onBack: () => void
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="stat">
-      <span className="stat__value">{value}</span>
-      <span className="stat__label">{label}</span>
-    </div>
-  )
 }
 
 const COLLAPSE_ABOVE = 8
@@ -52,8 +43,8 @@ function List({ title, items }: { title: string; items: string[] }) {
   )
 }
 
-export function StageDetail({ year, detail, minutes, cursor, onCursor, onBack }: Props) {
-  const { closure, profile, spectator } = detail
+export function StageDetail({ year, detail, minutes, profile, onBack }: Props) {
+  const { closure, spectator } = detail
   const repeatRuns = detail.runsAs.length > 1
   const source = year.sources.find((s) => s.mid === detail.line.properties.sourceMid)
 
@@ -86,36 +77,7 @@ export function StageDetail({ year, detail, minutes, cursor, onCursor, onBack }:
         )}
       </header>
 
-      {profile && (
-        <section className="detail__section">
-          <h3>Elevation</h3>
-          <ElevationProfile
-            code={detail.code}
-            profile={profile}
-            cursor={cursor}
-            onCursor={onCursor}
-          />
-          <div className="grade-legend" aria-hidden="true">
-            {GRADE_LEGEND.map((g) => (
-              <span key={g}>
-                <i style={{ background: gradeColor(g) }} />
-                {g > 0 ? `+${g}` : g}%
-              </span>
-            ))}
-          </div>
-          <div className="stat-strip">
-            <Stat label="Length" value={`${profile.lengthKm.toFixed(2)} km`} />
-            <Stat label="Climb" value={`${Math.round(profile.climbM)} m`} />
-            <Stat label="Descent" value={`${Math.round(profile.descentM)} m`} />
-            <Stat label="Net" value={`${profile.netM >= 0 ? '+' : ''}${Math.round(profile.netM)} m`} />
-            <Stat label="Max grade" value={`${profile.maxGradePct.toFixed(1)}%`} />
-          </div>
-          <p className="detail__caveat">
-            Elevation is sampled from open terrain tiles and smoothed over about 200 m. Gradients
-            are indicative, not surveyed.
-          </p>
-        </section>
-      )}
+      {profile}
 
       <List title="Roads closed" items={closure.roadsClosed} />
 

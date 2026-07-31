@@ -8,7 +8,9 @@ export interface FakeMap {
   featureState: Map<string, Record<string, unknown>>
   layoutProperties: Map<string, unknown>
   paintProperties: Map<string, unknown>
+  getLayer: (id: string) => { id: string } | undefined
   fitBounds: ReturnType<typeof vi.fn>
+  resize: ReturnType<typeof vi.fn>
   fireLoad: () => void
   fire: (type: string, layerId: string | null, event: unknown) => void
 }
@@ -22,6 +24,7 @@ export class FakeMapLibreMap implements FakeMap {
   layoutProperties = new Map<string, unknown>()
   paintProperties = new Map<string, unknown>()
   fitBounds = vi.fn()
+  resize = vi.fn()
   private handlers = new Map<string, Handler[]>()
 
   constructor() {

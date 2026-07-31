@@ -7,6 +7,7 @@ import { loadYear } from '../src/domain/load'
 import { resolveStageDetail } from '../src/domain/detail'
 import type { RallyYear } from '../src/domain/types'
 import { maps, type FakeMap } from './map-mock'
+import { DETAIL_LAYER } from '../src/map/layers'
 
 vi.mock('maplibre-gl', async () => {
   const { FakeMapLibreMap } = await import('./map-mock')
@@ -100,12 +101,38 @@ describe('stage detail view', () => {
 
     const headings = screen.getAllByRole('heading', { level: 3 }).map((h) => h.textContent)
     expect(headings).toEqual([
-      'Elevation',
       'Roads closed',
       'Start and finish',
       'Affected intersections',
       'Repeat run',
     ])
+
+    // The profile lives with the map rather than in the panel, so it is a region
+    // rather than a section of the card. At 360px it had no room to draw.
+    expect(screen.getByRole('region', { name: /Elevation profile for SS4/ })).toBeInTheDocument()
+  })
+
+  // The twelve the spec enumerates. Four of them are not h3 sections — the header,
+  // the plan view on the map, the closure window and the stat strip — so counting
+  // headings alone reported four when the answer was closer to eleven.
+  it('carries all twelve documented sections', async () => {
+    await userEvent.click(card('SS4'))
+
+    expect(screen.getByText('09:10–17:10').closest('header')).toBeInTheDocument()
+    expect(document.querySelector('.detail__window')).toBeInTheDocument()
+    expect(map.getLayer(DETAIL_LAYER)).toBeTruthy()
+    expect(screen.getByRole('region', { name: /Elevation profile for SS4/ })).toBeInTheDocument()
+    expect(document.querySelector('.stat-strip')).toBeInTheDocument()
+    for (const heading of ['Roads closed', 'Start and finish', 'Affected intersections', 'Repeat run']) {
+      expect(screen.getByRole('heading', { name: heading })).toBeInTheDocument()
+    }
+    expect(screen.getByRole('note')).toBeInTheDocument()
+    expect(document.querySelector('.source-notice')).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: /All day 1 stages/ }))
+    await userEvent.click(screen.getByRole('tab', { name: /Day 3/ }))
+    await userEvent.click(card('SS25'))
+    expect(screen.getByRole('heading', { name: 'Spectating' })).toBeInTheDocument()
   })
 
   it('omits nullable sections rather than leaving a gap', async () => {
@@ -114,7 +141,7 @@ describe('stage detail view', () => {
     expect(headings).not.toContain('Affected intersections')
     expect(headings).not.toContain('Repeat run')
     expect(headings).not.toContain('Spectating')
-    expect(headings).toContain('Elevation')
+    expect(screen.getByRole('region', { name: /Elevation profile for SS1/ })).toBeInTheDocument()
   })
 
   it('shows spectator information only where the organisers named one', async () => {

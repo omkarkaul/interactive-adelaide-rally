@@ -17,12 +17,7 @@ export function StagePanel({ year, day, focus, minutes, onHover, onSelect }: Pro
   const stages = stagesForDay(year, day)
 
   return (
-    <div
-      className="stage-panel"
-      id={`day-panel-${day}`}
-      role="tabpanel"
-      aria-labelledby={`day-tab-${day}`}
-    >
+    <div className="stage-panel">
       <ul className="stage-list">
         {stages.map((stage) => {
           const closure = closureForStage(year, stage.code)!

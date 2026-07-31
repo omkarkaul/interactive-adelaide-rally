@@ -8,6 +8,9 @@ import { clampToWindow, envelopeOf, minutesOfDay } from './domain/time'
 import { DayTabs } from './ui/DayTabs'
 import { StagePanel } from './ui/StagePanel'
 import { StageDetail } from './ui/StageDetail'
+import { StageProfile } from './ui/StageProfile'
+import { SheetHandle } from './ui/SheetHandle'
+import { SNAP_POINTS } from './ui/sheet'
 import { ClosureGantt } from './ui/ClosureGantt'
 import { TimeScrubber } from './ui/TimeScrubber'
 import { SafetyNotice, SourceNotice } from './ui/SafetyNotice'
@@ -20,7 +23,6 @@ const RallyMap = lazy(() =>
   import('./map/RallyMap').then((module) => ({ default: module.RallyMap })),
 )
 
-const PANEL_WIDTH = 360
 const NARROW = '(max-width: 860px)'
 
 function useIsNarrow(): boolean {
@@ -80,6 +82,7 @@ export default function App({
   const [minutes, setMinutes] = useState<number | null>(null)
   const [cursor, setCursor] = useState<Cursor | null>(null)
   const [showGantt, setShowGantt] = useState(!narrow)
+  const [sheet, setSheet] = useState<number>(SNAP_POINTS[1])
   const restoredTime = useRef(initial.minutes)
 
   useEffect(() => {
@@ -186,15 +189,28 @@ export default function App({
         {/* The panel is the scroll container, so the notices scroll away with
             the list instead of holding a fixed footer that on a phone left the
             stage list a sliver, and the detail header can stick inside it. */}
-        <aside className="app__panel">
+        {/* The tabpanel is the aside, not the stage list inside it: with a stage
+            open the list is replaced by the detail card, and the day tab's
+            aria-controls pointed at an element that no longer existed. */}
+        <div
+          className="app__panel"
+          id={`day-panel-${day}`}
+          role="tabpanel"
+          aria-labelledby={`day-tab-${day}`}
+          style={narrow ? { height: `${sheet * 100}dvh` } : undefined}
+        >
+          {narrow && <SheetHandle fraction={sheet} onChange={setSheet} />}
           {detail ? (
             <StageDetail
               year={year}
               detail={detail}
               minutes={minutes}
-              cursor={cursor}
-              onCursor={setCursor}
               onBack={onBack}
+              profile={
+                narrow ? (
+                  <StageProfile detail={detail} cursor={cursor} onCursor={setCursor} />
+                ) : undefined
+              }
             />
           ) : (
             <>
@@ -212,10 +228,11 @@ export default function App({
               </div>
             </>
           )}
-        </aside>
+        </div>
 
         <div className="app__map">
-          <Suspense fallback={<div className="app__map-loading">Loading map…</div>}>
+          <div className="app__map-canvas">
+            <Suspense fallback={<div className="app__map-loading">Loading map…</div>}>
             <RallyMap
               year={year}
               day={day}
@@ -223,12 +240,15 @@ export default function App({
               minutes={minutes}
               onHover={onHover}
               onSelect={onSelect}
-              panelWidth={narrow ? 0 : PANEL_WIDTH}
               detail={detail}
               cursor={cursor}
               onCursor={setCursor}
             />
-          </Suspense>
+            </Suspense>
+          </div>
+          {detail && !narrow && (
+            <StageProfile detail={detail} cursor={cursor} onCursor={setCursor} />
+          )}
         </div>
       </main>
 

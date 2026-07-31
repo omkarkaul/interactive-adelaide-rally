@@ -41,7 +41,6 @@ interface Props {
   minutes: number | null
   onHover: (code: StageCode | null) => void
   onSelect: (code: StageCode | null) => void
-  panelWidth: number
   detail: StageDetail | null
   cursor: Cursor | null
   onCursor: (cursor: Cursor | null) => void
@@ -54,7 +53,6 @@ export function RallyMap({
   minutes,
   onHover,
   onSelect,
-  panelWidth,
   detail,
   cursor,
   onCursor,
@@ -245,11 +243,15 @@ export function RallyMap({
     const bounds = boundsOf(target)
     if (!bounds) return
 
-    instance.fitBounds(bounds, {
-      duration: 600,
-      padding: { top: 48, bottom: 48, right: 48, left: 48 + (selectedCode ? panelWidth : 0) },
-    })
-  }, [ready, year, day, selectedCode, panelWidth])
+    // Opening a stage puts the elevation profile under the map, which shortens
+    // the canvas. Without resizing first, fitBounds frames against the old
+    // height and the stage runs off the bottom edge.
+    instance.resize()
+    // The panel is a flex sibling, not an overlay, so the map element already
+    // excludes it. Adding its width as left padding only pushed the selected
+    // stage off-centre and shrank it.
+    instance.fitBounds(bounds, { duration: 600, padding: 48 })
+  }, [ready, year, day, selectedCode])
 
   useEffect(() => {
     const instance = map.current
