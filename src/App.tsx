@@ -217,6 +217,11 @@ export default function App({
             />
           ) : (
             <>
+              {/* Above the list, not below it: in the footer it sat 570-750px
+                  down a scrolling panel, which on the landing screen is the
+                  same as absent. It travels with any surface showing a closure
+                  time, and every card here shows one. */}
+              <SafetyNotice />
               <StagePanel
                 year={year}
                 day={day}
@@ -226,7 +231,6 @@ export default function App({
                 onSelect={onSelect}
               />
               <div className="app__panel-footer">
-                <SafetyNotice />
                 <SourceNotice fetchedAt={year.sources[0]?.fetchedAt ?? null} />
               </div>
             </>
@@ -260,7 +264,7 @@ export default function App({
       </main>
 
       <section
-        className={detail ? 'app__time is-compact' : 'app__time'}
+        className={`app__time${detail ? ' is-compact' : ''}${showGantt && !detail ? ' has-gantt' : ''}`}
         aria-label="Road closure timeline"
       >
         <TimeScrubber

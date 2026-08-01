@@ -57,7 +57,14 @@ export function StagePanel({ year, day, focus, minutes, onHover, onSelect }: Pro
                   {stage.featureId === null && <span className="badge">No map</span>}
                 </span>
 
-                <span className="stage-card__roads">{closure.roadsClosed.join(' · ')}</span>
+                <span className="stage-card__roads">
+                  {closure.roadsClosed.map((road, index) => (
+                    <span key={road}>
+                      {road}
+                      {index < closure.roadsClosed.length - 1 && ' · '}
+                    </span>
+                  ))}
+                </span>
 
                 {closure.stageCodes.length > 1 && (
                   <span className="stage-card__note">

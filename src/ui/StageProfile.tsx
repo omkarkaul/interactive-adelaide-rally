@@ -11,8 +11,8 @@ interface Props {
 function Stat({ label, value, modifier }: { label: string; value: string; modifier?: string }) {
   return (
     <div className={modifier ? `stat stat--${modifier}` : 'stat'}>
-      <span className="stat__value">{value}</span>
       <span className="stat__label">{label}</span>
+      <span className="stat__value">{value}</span>
     </div>
   )
 }
@@ -32,7 +32,8 @@ export function StageProfile({ detail, cursor, onCursor }: Props) {
         <Stat
           label="Net"
           modifier="net"
-          value={`${profile.netM >= 0 ? '+' : ''}${Math.round(profile.netM)} m`}
+          // U+2212, not a hyphen: it aligns with the digits in the mono stack.
+          value={`${profile.netM >= 0 ? '+' : '\u2212'}${Math.abs(Math.round(profile.netM))} m`}
         />
         <Stat label="Max grade" value={`${profile.maxGradePct.toFixed(1)}%`} />
       </div>

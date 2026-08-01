@@ -107,6 +107,11 @@ export function ElevationProfile({ code, profile, cursor, onCursor }: Props) {
     [code, profile.lengthKm, step, onCursor],
   )
 
+  // Whole kilometres, thinned so the labels never collide at any width.
+  const tickStep = Math.max(1, Math.ceil(profile.lengthKm / Math.max(1, Math.floor(plotWidth / 70))))
+  const distanceTicks: number[] = []
+  for (let km = tickStep; km < profile.lengthKm - tickStep / 2; km += tickStep) distanceTicks.push(km)
+
   const readout = active
     ? `${active.distanceKm.toFixed(2)} km · ${Math.round(active.elevationM)} m · ${active.gradePct >= 0 ? '+' : ''}${active.gradePct.toFixed(1)}%`
     : 'Hover, drag or use the arrow keys to read distance, elevation and grade.'
@@ -155,6 +160,13 @@ export function ElevationProfile({ code, profile, cursor, onCursor }: Props) {
         {[minM, (minM + maxM) / 2, maxM].map((m) => (
           <text key={m} className="profile__axis" x={PAD.left - 5} y={y(m) + 3} textAnchor="end">
             {Math.round(m)} m
+          </text>
+        ))}
+
+        {/* The ends alone give no sense of scale across 20 km of road. */}
+        {distanceTicks.map((km) => (
+          <text key={km} className="profile__axis" x={x(km)} y={HEIGHT - 6} textAnchor="middle">
+            {km} km
           </text>
         ))}
 

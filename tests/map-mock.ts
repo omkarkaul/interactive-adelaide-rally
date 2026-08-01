@@ -9,6 +9,7 @@ export interface FakeMap {
   layoutProperties: Map<string, unknown>
   paintProperties: Map<string, unknown>
   getLayer: (id: string) => { id: string } | undefined
+  moveLayer: (id: string, beforeId?: string) => void
   fitBounds: ReturnType<typeof vi.fn>
   resize: ReturnType<typeof vi.fn>
   fireLoad: () => void
@@ -67,6 +68,14 @@ export class FakeMapLibreMap implements FakeMap {
     this.layers.push(layer.id)
     return this
   }
+  moveLayer(id: string, beforeId?: string) {
+    const from = this.layers.indexOf(id)
+    if (from === -1) return
+    this.layers.splice(from, 1)
+    const before = beforeId === undefined ? -1 : this.layers.indexOf(beforeId)
+    this.layers.splice(before === -1 ? this.layers.length : before, 0, id)
+  }
+
   getLayer(id: string) {
     return this.layers.includes(id) ? { id } : undefined
   }

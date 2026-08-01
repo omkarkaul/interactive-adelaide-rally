@@ -119,6 +119,7 @@ a {
   border-radius: 999px;
 }
 
+.stage-panel + .app__panel-footer,
 .app__panel-footer {
   margin-top: auto;
   padding: 12px 14px 16px;
@@ -266,6 +267,11 @@ a {
   flex: 0 0 auto;
 }
 
+.stage-panel + .app__panel-footer .safety-notice,
+.app__panel > .safety-notice {
+  margin: 8px 8px 0;
+}
+
 .stage-panel__count {
   margin: 0;
   padding: 10px 12px 2px;
@@ -373,6 +379,11 @@ a {
   line-height: 1.4;
 }
 
+/* "… Corkscrew Rd · Gorge / Rd" — a road name split across its own suffix. */
+.stage-card__roads span {
+  white-space: nowrap;
+}
+
 .stage-card__note {
   font-size: 12px;
   color: var(--text-dim);
@@ -387,7 +398,6 @@ a {
   font-weight: 600;
   letter-spacing: 0.02em;
   color: var(--text-dim);
-  text-transform: uppercase;
 }
 
 .badge--spectator {
@@ -474,18 +484,23 @@ a {
 .scrubber__label {
   font-size: 12px;
   color: var(--text-dim);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 /* The thumb must travel exactly the span the Gantt plots across, so the input is
    indented by the same label gutter and ClosureGantt insets its scale by half a
-   thumb on top of that. Change one of these three and the now-line drifts. */
+   thumb on top of that. Change one of these three and the now-line drifts.
+   With no bars on screen there is nothing to align to, and the indent was just
+   costing a quarter of the track on a phone. */
 .scrubber__input {
   display: block;
-  width: calc(100% - var(--gantt-gutter));
-  margin: 0 0 0 var(--gantt-gutter);
+  width: 100%;
+  margin: 0;
   accent-color: var(--accent);
+}
+
+.app__time.has-gantt .scrubber__input {
+  width: calc(100% - var(--gantt-gutter));
+  margin-left: var(--gantt-gutter);
 }
 
 .scrubber__readout {
@@ -520,10 +535,12 @@ a {
   padding: 2px 0;
   background: none;
   border: none;
-  color: var(--text-dim);
+  color: var(--accent);
   cursor: pointer;
   font: inherit;
   font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .app__time-toggle:hover {
@@ -688,8 +705,6 @@ a {
   margin: 0 0 6px;
   font-size: 12px;
   font-weight: 650;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--text-dim);
 }
 
@@ -719,25 +734,25 @@ a {
 .detail__window-label {
   font-size: 12px;
   color: var(--text-dim);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
+/* The road and intersection chips beside this are read-only and use --border, so
+   a control that borrows their styling reads as data. This one is a link. */
 .detail__more {
   margin-top: 6px;
-  padding: 3px 10px;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  color: var(--text-dim);
+  padding: 3px 0;
+  background: none;
+  border: none;
+  color: var(--accent);
   cursor: pointer;
   font: inherit;
   font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .detail__more:hover {
   color: var(--text);
-  border-color: var(--border-strong);
 }
 
 .detail__caveat {
@@ -773,8 +788,6 @@ a {
 .detail__pairs dt {
   color: var(--text-dim);
   font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
   padding-top: 2px;
 }
 
@@ -874,21 +887,25 @@ a {
   border-radius: 2px;
 }
 
+/* Equal columns divided by hairlines, not detached pills: the gutters are the
+   grid's own background showing through a 1px gap. */
 .stat-strip {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(62px, 1fr));
-  gap: 6px;
+  gap: 1px;
   margin-top: 10px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 
 .stat {
   display: flex;
   flex-direction: column;
   gap: 1px;
-  padding: 6px 8px;
-  background: var(--bg-raised);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  padding: 6px 10px;
+  background: var(--bg-panel);
 }
 
 .stat__value {
@@ -899,8 +916,6 @@ a {
 
 .stat__label {
   font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
   color: var(--text-dim);
 }
 
@@ -1041,9 +1056,8 @@ a {
     padding: 6px 8px;
   }
 
-  .stat__label {
-    text-transform: none;
-    letter-spacing: 0;
+  .stat-strip {
+    border-radius: var(--radius);
   }
 
   /* Coarse pointers need a bigger target than a 12px range thumb. The compact

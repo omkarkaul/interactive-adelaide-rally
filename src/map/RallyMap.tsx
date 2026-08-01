@@ -12,6 +12,7 @@ import type { Cursor, StageDetail } from '../domain/types'
 import {
   casingLayer,
   codeLabelLayer,
+  codeLabelLayerId,
   cursorLayer,
   CURSOR_SOURCE,
   DETAIL_SOURCE,
@@ -26,6 +27,7 @@ import {
   reopenedDashLayer,
   sourceId,
   terminiLabelLayer,
+  terminiLabelLayerId,
   terminiLayer,
   terminiSourceId,
 } from './layers'
@@ -155,6 +157,13 @@ export function RallyMap({
       instance.addLayer(detailLineLayer())
       instance.addLayer(detailArrowLayer())
       instance.addLayer(cursorLayer())
+
+      // The detail line is added last and so drew over the stage codes, which
+      // were added with the day layers. Lift the labels back to the top.
+      for (const d of DAYS) {
+        instance.moveLayer(codeLabelLayerId(d))
+        instance.moveLayer(terminiLabelLayerId(d))
+      }
 
       // Touch never fires mousemove, so a tap is what places the cursor on a
       // phone. A tap near the open stage's line places it; anywhere else clears

@@ -7,7 +7,7 @@ import { loadYear } from '../src/domain/load'
 import { resolveStageDetail } from '../src/domain/detail'
 import type { RallyYear } from '../src/domain/types'
 import { maps, type FakeMap } from './map-mock'
-import { DETAIL_LAYER } from '../src/map/layers'
+import { codeLabelLayerId, DETAIL_LAYER } from '../src/map/layers'
 
 vi.mock('maplibre-gl', async () => {
   const { FakeMapLibreMap } = await import('./map-mock')
@@ -202,6 +202,14 @@ describe('stage detail view', () => {
     expect(map.layers).toContain('detail-line-grade')
     expect(map.layoutProperties.get('detail-line-grade.visibility')).toBe('visible')
     expect(map.layoutProperties.get('detail-line-arrows.visibility')).toBe('visible')
+  })
+
+  // The detail line is added after the day layers, so it drew straight over the
+  // stage codes: "SS4 / SS7" came out with the route through it.
+  it('keeps the stage code labels above the selected route', async () => {
+    await userEvent.click(card('SS4'))
+    const order = map.layers
+    expect(order.indexOf(codeLabelLayerId(1))).toBeGreaterThan(order.indexOf(DETAIL_LAYER))
   })
 
   it('hides the detail layers again on the way back to the list', async () => {
