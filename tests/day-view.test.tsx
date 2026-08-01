@@ -99,12 +99,14 @@ describe('day view', () => {
 
     const [bounds, options] = map.fitBounds.mock.calls.at(-1)!
     expect(bounds).toHaveLength(4)
-    expect(options.padding).toBe(48)
+    // Even on every side. The sheet only insets the bottom on a narrow viewport,
+    // where it genuinely overlays the map.
+    expect(options.padding).toEqual({ top: 48, right: 48, bottom: 48, left: 48 })
 
     map.fitBounds.mockClear()
     await userEvent.click(screen.getByRole('button', { name: /All day 1 stages/ }))
     const [dayBounds, dayOptions] = map.fitBounds.mock.calls.at(-1)!
-    expect(dayOptions.padding).toBe(48)
+    expect(dayOptions.padding).toEqual({ top: 48, right: 48, bottom: 48, left: 48 })
     expect(dayBounds[2] - dayBounds[0]).toBeGreaterThan(bounds[2] - bounds[0])
   })
 

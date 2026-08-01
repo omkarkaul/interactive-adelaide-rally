@@ -1,4 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { loadYear } from './domain/load'
 import { availableYears } from './domain/registry'
 import { focusReducer, NO_FOCUS } from './domain/focus'
@@ -197,7 +198,9 @@ export default function App({
           id={`day-panel-${day}`}
           role="tabpanel"
           aria-labelledby={`day-tab-${day}`}
-          style={narrow ? { height: `${sheet * 100}dvh` } : undefined}
+          // Percentage of the body, not the viewport: the header and the time bar
+          // are outside it, and dvh overflowed them off the screen.
+          style={narrow ? { height: `${sheet * 100}%` } : undefined}
         >
           {narrow && <SheetHandle fraction={sheet} onChange={setSheet} />}
           {detail ? (
@@ -230,7 +233,10 @@ export default function App({
           )}
         </div>
 
-        <div className="app__map">
+        <div
+          className="app__map"
+          style={narrow ? ({ '--sheet-inset': `${sheet * 100}%` } as CSSProperties) : undefined}
+        >
           <div className="app__map-canvas">
             <Suspense fallback={<div className="app__map-loading">Loading map…</div>}>
             <RallyMap
@@ -240,6 +246,7 @@ export default function App({
               minutes={minutes}
               onHover={onHover}
               onSelect={onSelect}
+              bottomInset={narrow ? sheet : 0}
               detail={detail}
               cursor={cursor}
               onCursor={setCursor}

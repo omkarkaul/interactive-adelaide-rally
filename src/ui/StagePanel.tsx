@@ -18,6 +18,12 @@ export function StagePanel({ year, day, focus, minutes, onHover, onSelect }: Pro
 
   return (
     <div className="stage-panel">
+      {/* Six of eleven fit on a desktop and the list is cut mid-card at the
+          panel edge. Overlay scrollbars reserve no width on macOS and iOS, so
+          the styled bar alone does not say there is more; the count does. */}
+      <p className="stage-panel__count">
+        {stages.length} stages on day {day}
+      </p>
       <ul className="stage-list">
         {stages.map((stage) => {
           const closure = closureForStage(year, stage.code)!

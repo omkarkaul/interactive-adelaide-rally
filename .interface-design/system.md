@@ -114,6 +114,15 @@ Termini are a form difference, not a hue one: start is filled `--text-primary`,
 finish is hollow — `--map-casing` fill with a `--text-primary` stroke. Hue on the
 map is spoken for by closure state.
 
+### Layout
+
+```
+--gantt-gutter  78px   Gantt row-label column, and the scrubber's track indent
+```
+
+Read by both `ClosureGantt` and the scrubber. If the two disagree the now-line
+stops sitting under the thumb, which is the whole reason the shared scale exists.
+
 ### Notice
 
 ```
@@ -188,11 +197,47 @@ Equal columns, 1px `--border` gutters on `--bg-panel`
 Label 12px `--text-muted` above, value 16px mono 500 below
 Never reflows into ragged rows — reduce column count instead
 
+Five tiles in one row down to 834px. Below 860px the labels drop their capitals
+and tracking, because "Descent" clipped its cell and 12px is the floor for that
+text. Five will not divide into an even grid at 390px, so the strip becomes 2x2
+and Net is dropped — the only one of the five a reader can derive from the rest.
+
+### Elevation profile
+
+Sits under the map, full width, not in the panel: 1048px at 1440, 802px at 834.
+At the panel's 360px it had no room to show a gradient.
+
+Below 860px it moves inside the stage card, immediately after the header. Under
+the map on a phone it pushed the closure window below the fold, and that window
+is the question the stage was opened to answer.
+
+Axis gutter 52px, enough for "1234 m". Chart annotations are 11px, in-SVG only.
+
+### Bottom sheet
+
+Narrow viewports only. The stage panel is a sheet resting at 25 / 55 / 90% of the
+viewport; the map takes whatever is left rather than the two splitting a fixed
+share.
+
+Handle: 36x4px grip on `--border-strong`, 24px tall with 14px of padding either
+side so the target clears a thumb. `touch-action: none`, pointer capture on drag.
+`role="slider"` with arrow-key stepping through the same three stops — a drag is
+not reachable from a keyboard.
+
 ### Metadata section
 
 Padding 11px 14px · `border-bottom: 1px --border`
 Label 12px `--text-muted`, value 13px line-height 1.6
 Omits entirely when its data is null — no empty heading, no gap
+
+### Scrollable panel
+
+A persistent 10px `--border-strong` thumb via `::-webkit-scrollbar`, plus a count
+above the list. Note that `scrollbar-width` and `::-webkit-scrollbar` cannot both
+be set — Chromium honours the standard property and ignores the pseudo-elements.
+
+The bar alone is not enough: overlay scrollbars reserve no width on macOS and
+iOS, so on those platforms the count is the only thing saying the list continues.
 
 ### Safety notice
 

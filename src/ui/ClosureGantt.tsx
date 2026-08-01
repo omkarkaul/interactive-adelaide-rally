@@ -186,6 +186,15 @@ export function ClosureGantt({ year, day, focus, minutes, onHover, onSelect }: P
           y1={AXIS_HEIGHT}
           y2={height}
         />
+
+        {/* The scrubber's clock sits at the far right of the bar, a screen away
+            from the line it describes. This is the same value, on the line. */}
+        <g className="gantt__now-flag" transform={`translate(${x(minutes)}, 0)`}>
+          <rect x={-22} y={0} width={44} height={AXIS_HEIGHT - 3} rx={2} />
+          <text x={0} y={AXIS_HEIGHT - 8} textAnchor="middle">
+            {formatClock(minutes)}
+          </text>
+        </g>
       </svg>
 
       {/* Three encodings are in play now — fill, outline and dash — so the key
@@ -200,7 +209,6 @@ export function ClosureGantt({ year, day, focus, minutes, onHover, onSelect }: P
         <li>
           <span className="gantt__key gantt__key--reopened" /> reopened
         </li>
-        <li className="gantt__legend-note">focus is opacity and weight, never colour</li>
       </ul>
     </div>
   )

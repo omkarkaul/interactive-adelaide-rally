@@ -41,6 +41,9 @@ interface Props {
   minutes: number | null
   onHover: (code: StageCode | null) => void
   onSelect: (code: StageCode | null) => void
+  // Fraction of the map the sheet covers on a narrow viewport. The map fills the
+  // body and the sheet lies over it, so the visible band is the rest.
+  bottomInset?: number
   detail: StageDetail | null
   cursor: Cursor | null
   onCursor: (cursor: Cursor | null) => void
@@ -53,6 +56,7 @@ export function RallyMap({
   minutes,
   onHover,
   onSelect,
+  bottomInset = 0,
   detail,
   cursor,
   onCursor,
@@ -247,11 +251,15 @@ export function RallyMap({
     // the canvas. Without resizing first, fitBounds frames against the old
     // height and the stage runs off the bottom edge.
     instance.resize()
+    const covered = (container.current?.clientHeight ?? 0) * bottomInset
     // The panel is a flex sibling, not an overlay, so the map element already
     // excludes it. Adding its width as left padding only pushed the selected
     // stage off-centre and shrank it.
-    instance.fitBounds(bounds, { duration: 600, padding: 48 })
-  }, [ready, year, day, selectedCode])
+    instance.fitBounds(bounds, {
+      duration: 600,
+      padding: { top: 48, right: 48, left: 48, bottom: 48 + covered },
+    })
+  }, [ready, year, day, selectedCode, bottomInset])
 
   useEffect(() => {
     const instance = map.current

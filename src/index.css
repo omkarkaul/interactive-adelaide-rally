@@ -91,6 +91,34 @@ a {
   border-right: 1px solid var(--border);
 }
 
+/* Overlay scrollbars are invisible until you already know to scroll, and the day
+   list runs ~750px past the panel on a desktop. A persistent thin bar is the
+   affordance a borders-only system can carry: a fade would need a gradient. */
+/* scrollbar-width and ::-webkit-scrollbar cannot both be set: Chromium honours
+   the standard property and then ignores the pseudo-elements, which is how this
+   first shipped as a 1px sliver. */
+@supports not selector(::-webkit-scrollbar) {
+  .app__panel {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+}
+
+.app__panel::-webkit-scrollbar {
+  width: 10px;
+}
+
+.app__panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app__panel::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  border-radius: 999px;
+}
+
 .app__panel-footer {
   margin-top: auto;
   padding: 12px 14px 16px;
@@ -183,6 +211,13 @@ a {
   filter: invert(1) brightness(0.52);
 }
 
+/* The sheet lies over the bottom of the map, and OpenStreetMap's attribution has
+   to stay visible. Lift the map's own controls clear of it. */
+.rally-map .maplibregl-ctrl-bottom-left,
+.rally-map .maplibregl-ctrl-bottom-right {
+  bottom: var(--sheet-inset, 0);
+}
+
 /* Day tabs */
 
 .day-tabs {
@@ -229,6 +264,13 @@ a {
 
 .stage-panel {
   flex: 0 0 auto;
+}
+
+.stage-panel__count {
+  margin: 0;
+  padding: 10px 12px 2px;
+  font-size: 12px;
+  color: var(--text-muted);
 }
 
 .stage-list {
@@ -544,9 +586,15 @@ a {
   border: 1px dashed var(--state-reopened);
 }
 
-.gantt__legend-note {
-  margin-left: auto;
-  font-style: italic;
+.gantt__now-flag rect {
+  fill: var(--accent);
+}
+
+.gantt__now-flag text {
+  fill: var(--bg-base);
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .gantt__row {
@@ -903,27 +951,38 @@ a {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  /* Map above, stage list below, and the list gets whatever is left. Its own
-     scroll container is what lets the detail header stay stuck to the top. */
+  /* The sheet overlays the map rather than sharing a column with it. Stacked,
+     a fixed 32vh map plus a 55dvh sheet overflowed the body and pushed the
+     header off the top of the screen. */
   .app__body {
-    flex-direction: column-reverse;
+    position: relative;
   }
 
   /* The map column carries the profile too once a stage is open, so the height
      belongs to the canvas rather than to the column. Fixed on the column, the
      profile squeezed the canvas to nothing and the map vanished. */
+  /* z-index 0 rather than none: it makes the map its own stacking context, so
+     MapLibre's own controls cannot rise above the sheet. Without it the
+     attribution pill and scale bar drew on top of the stage card. */
   .app__map {
-    flex: 0 0 auto;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
   }
 
   .app__map-canvas {
-    flex: 0 0 32vh;
-    min-height: 180px;
+    flex: 1 1 auto;
+    min-height: 0;
   }
 
   /* A bottom sheet: the height is driven by the drag handle, and the map keeps
      whatever is left rather than the two competing for a fixed split. */
   .app__panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
     width: 100%;
     flex: 0 0 auto;
     border-right: none;
