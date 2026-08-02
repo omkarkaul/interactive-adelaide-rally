@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Mockup — about</title>
+<style>
+:root{
+--bg-base:#12141a;--bg-panel:#1b1e26;--bg-elevated:#242832;
+--border:#2f3440;--border-strong:#454b5a;
+--text-primary:#eef0f4;--text-secondary:#a2a9b8;--text-muted:#8189a0;
+--accent:#f2733d;
+--notice-bg:#2a1416;--notice-text:#ffb3b5;
+--radius-control:8px;
+--sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg-base);color:var(--text-primary);font-family:var(--sans);font-size:13px;min-height:100vh}
+header{height:56px;display:flex;align-items:center;gap:12px;padding:0 16px;background:var(--bg-panel);border-bottom:1px solid var(--border)}
+h1{font-size:15px;font-weight:500;margin:0;line-height:1.25}
+.sub{font-size:11px;color:var(--text-muted)}
+.spacer{margin-left:auto}
+.chip{font-size:12px;color:var(--text-secondary);padding:6px 11px;border:1px solid var(--border);border-radius:var(--radius-control);text-decoration:none;white-space:nowrap}
+.chip.made{color:var(--text-primary);border-color:var(--border-strong)}
+.chip.made .em{font-style:normal}
+main{padding:34px 24px 40px}
+.col{max-width:470px;margin:0 auto}
+.back{font-size:12px;color:var(--text-muted);text-decoration:none;display:inline-block;margin-bottom:22px}
+.by{font-size:18px;font-weight:500;margin:0 0 26px}
+a.link{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(242,115,61,.35)}
+.notice{background:var(--notice-bg);color:var(--notice-text);border-radius:var(--radius-control);padding:12px 14px;font-size:12px;line-height:1.6;margin-bottom:26px}
+section{margin-bottom:22px}
+section+section{border-top:1px solid var(--border);padding-top:18px}
+.lab{font-size:12px;color:var(--text-muted);margin-bottom:6px}
+.body{font-size:13px;color:var(--text-secondary);line-height:1.7}
+footer{border-top:1px solid var(--border);padding-top:16px;font-size:12px;color:var(--text-muted);line-height:1.7}
+@media (max-width:500px){
+ .chip.made .txt{display:none}
+ .chip.made{padding:6px 10px}
+ main{padding:26px 16px 32px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>2026 Shannons Adelaide Rally</h1>
+    <div class="sub">Stages and road closures</div>
+  </div>
+  <div class="spacer"></div>
+  <a class="chip" href="#">Day 1</a>
+  <a class="chip made" href="/about" aria-label="About this project">
+    <span class="txt">made with </span><span class="em" role="img" aria-label="love">&#10084;&#65039;</span>
+  </a>
+</header>
+
+<main>
+  <div class="col">
+    <a class="back" href="/">&larr; Back to the map</a>
+
+    <p class="by">Made with <span role="img" aria-label="love">&#10084;&#65039;</span> by <a class="link" href="https://www.rakmo.io">omkar</a></p>
+
+    <div class="notice">
+      Rally cars are fast, and a closed road stays closed between runs. Spectate only from approved areas. Never enter a closed stage — wait for officials to remove the tape.
+    </div>
+
+    <section>
+      <div class="lab">Why this exists</div>
+      <div class="body">The official route and closures live on two separate pages — a grid of images on one, a wall of prose on the other. This is the same information on a single map, by day, with every closure attached to the road it closes.</div>
+    </section>
+
+    <section>
+      <div class="lab">And going forward</div>
+      <div class="body">No public record of past years is kept anywhere. Each year here is captured from the source, checksummed and committed, so 2026 stays readable long after 2027 replaces it.</div>
+    </section>
+
+    <footer>
+      Not the official source. Route and closure data belongs to the organisers —
+      <a class="link" href="https://www.adelaiderally.com.au/road-closures">adelaiderally.com.au</a>.
+      Captured 29 Jul 2026.
+    </footer>
+  </div>
+</main>
+
+</body>
+</html>

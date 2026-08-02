@@ -11,15 +11,18 @@ export function SafetyNotice() {
   )
 }
 
+export function captureDate(fetchedAt: string | null): string | null {
+  return fetchedAt && fetchedAt !== 'unknown'
+    ? new Date(fetchedAt).toLocaleDateString('en-AU', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      })
+    : null
+}
+
 export function SourceNotice({ fetchedAt }: { fetchedAt: string | null }) {
-  const captured =
-    fetchedAt && fetchedAt !== 'unknown'
-      ? new Date(fetchedAt).toLocaleDateString('en-AU', {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-        })
-      : null
+  const captured = captureDate(fetchedAt)
 
   return (
     <p className="source-notice">
