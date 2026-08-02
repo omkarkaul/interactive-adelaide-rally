@@ -74,6 +74,35 @@ a {
   color: var(--text-dim);
 }
 
+.app__header-actions {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+/* Chrome, not state. The heart is an emoji glyph so the header never carries a
+   second red inches from the closure-red lines and times on the map. */
+.made-with {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 12px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.made-with:hover {
+  background: var(--bg-elevated);
+}
+
+.heart {
+  line-height: 1;
+}
+
 .app__body {
   display: flex;
   flex: 1;
@@ -916,14 +945,16 @@ a {
 
 /* Notices */
 
+/* Opaque --notice-bg rather than a tint of --closed: the notice has to read the
+   same over --bg-panel in the detail card and over --bg-base on /about, and a
+   translucent state colour changed with whatever was behind it. */
 .safety-notice {
   padding: 10px 12px;
-  background: color-mix(in srgb, var(--closed) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--closed) 35%, transparent);
+  background: var(--notice-bg);
   border-radius: var(--radius);
   font-size: 12px;
-  line-height: 1.45;
-  color: var(--text);
+  line-height: 1.55;
+  color: var(--notice-text);
 }
 
 .source-notice {
@@ -931,6 +962,88 @@ a {
   font-size: 12px;
   line-height: 1.45;
   color: var(--text-dim);
+}
+
+/* About */
+
+.about__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 34px 24px 40px;
+}
+
+/* Prose, not a dashboard column. Past ~470px the eye loses the start of the next
+   line, and at 1440px the copy would otherwise run the full window. */
+.about__col {
+  max-width: 470px;
+  margin: 0 auto;
+}
+
+.about__back {
+  display: inline-block;
+  margin-bottom: 22px;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.about__back:hover {
+  color: var(--text);
+}
+
+.about__by {
+  margin: 0 0 26px;
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.about__link {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.about__link:hover {
+  border-bottom-color: var(--accent);
+}
+
+.about__notice {
+  margin-bottom: 26px;
+  padding: 12px 14px;
+  line-height: 1.6;
+}
+
+.about__section {
+  margin-bottom: 22px;
+}
+
+.about__section + .about__section {
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+.about__section h2 {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.about__section p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-dim);
+}
+
+.about__footer {
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-muted);
 }
 
 /* MapLibre chrome */
@@ -959,6 +1072,13 @@ a {
   .day-tabs {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* The tabs take the row and the about chip takes what it needs, so the header
+     stays two lines however long the day labels get. */
+  .app__header-actions .day-tabs {
+    flex: 1;
+    min-width: 0;
   }
 
   /* The sheet overlays the map rather than sharing a column with it. Stacked,
@@ -1066,6 +1186,22 @@ a {
 
   .stage-card {
     padding: 12px;
+  }
+}
+
+/* Three day tabs and a labelled chip do not share 390px without one of them
+   wrapping. The chip drops to the glyph; the tabs keep their dates. */
+@media (max-width: 500px) {
+  .made-with__text {
+    display: none;
+  }
+
+  .made-with {
+    padding: 6px 10px;
+  }
+
+  .about__body {
+    padding: 26px 16px 32px;
   }
 }
 

@@ -23,10 +23,11 @@ const appStates = [
   { name: 'detail-scrubbed', path: '/?year=2026&day=1&stage=SS4&t=09:40' },
   // Focus is a pointer state, so it has no URL. Captured here anyway: the panel
   // and map focus treatments cannot be reviewed from a screenshot without it.
-  { name: 'day-view-hovered', path: '/?year=2026&day=1&t=09:40', hover: '.stage-card:nth-of-type(1)' }
+  { name: 'day-view-hovered', path: '/?year=2026&day=1&t=09:40', hover: '.stage-card:nth-of-type(1)' },
+  { name: 'about', path: '/about' }
 ]
 
-const mockups = ['day-view', 'elevation-profile', 'stage-detail', 'stage-detail-mobile']
+const mockups = ['day-view', 'elevation-profile', 'stage-detail', 'stage-detail-mobile', 'about']
 
 function build() {
   const r = spawnSync('npx', ['vite', 'build'], { stdio: 'inherit', shell: process.platform === 'win32' })

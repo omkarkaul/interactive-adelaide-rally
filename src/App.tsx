@@ -15,6 +15,7 @@ import { SNAP_POINTS } from './ui/sheet'
 import { ClosureGantt } from './ui/ClosureGantt'
 import { TimeScrubber } from './ui/TimeScrubber'
 import { SourceNotice } from './ui/SafetyNotice'
+import { AboutLink } from './ui/About'
 import { parseUrlState, toSearch } from './url'
 import type { Cursor, RallyYear, StageCode } from './domain/types'
 
@@ -68,11 +69,13 @@ interface AppProps {
   // mounted repeatedly in one document without inheriting the last mount's URL.
   search?: string
   persistUrl?: boolean
+  onNavigate?: (to: string) => void
 }
 
 export default function App({
   search: initialSearch = window.location.search,
   persistUrl = true,
+  onNavigate,
 }: AppProps = {}) {
   const initial = useMemo(() => parseUrlState(initialSearch), [initialSearch])
   const narrow = useIsNarrow()
@@ -203,7 +206,10 @@ export default function App({
           <h1>{year.event.name}</h1>
           <p>Stages and road closures</p>
         </div>
-        <DayTabs days={year.event.days} selected={day} onSelect={onSelectDay} />
+        <div className="app__header-actions">
+          <DayTabs days={year.event.days} selected={day} onSelect={onSelectDay} />
+          <AboutLink onNavigate={onNavigate} />
+        </div>
       </header>
 
       <main className="app__body">
