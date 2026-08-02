@@ -31,9 +31,11 @@ describe('about page', () => {
     render(<Root />)
 
     expect(await screen.findByText(/Made with/)).toBeInTheDocument()
-    expect(screen.getByText(/Never enter a closed stage/)).toBeInTheDocument()
-    expect(screen.getByText(/Why this exists/)).toBeInTheDocument()
-    expect(screen.getByText(/And going forward/)).toBeInTheDocument()
+    // The safety copy gets reworded; that it is present and in the notice is the
+    // part worth pinning.
+    expect(screen.getByRole('note')).toHaveTextContent(/never enter a closed stage/i)
+    expect(screen.getByRole('heading', { name: 'Why this exists' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /going forward/i })).toBeInTheDocument()
   })
 
   it('never mounts the map', async () => {
