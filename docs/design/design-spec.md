@@ -120,7 +120,7 @@ Times always render as `07:45–12:45` with an en dash. Numeric stats use tabula
 
 ## Copy
 
-State labels are plain: "closed now", "closes 13:40", "reopened 12:45". Avoid "active" and "inactive" — they read as system state rather than road state.
+State labels are plain, and describe the stage rather than the road: "upcoming", "live", "finished". The reader is here for the rally, so the road closure is the consequence, not the subject. They carry no times — the window clock is always adjacent. Avoid "active" and "inactive" — they read as system state.
 
 The safety notice is not a tooltip and is not collapsible. It travels with any surface that displays a closure time.
 
