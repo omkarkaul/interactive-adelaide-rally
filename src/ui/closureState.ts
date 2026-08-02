@@ -1,4 +1,4 @@
-import { formatClock, windowOf } from '../domain/time'
+import { windowOf } from '../domain/time'
 import type { Closure } from '../domain/types'
 
 export type ClosureState = 'pending' | 'closed' | 'reopened'
@@ -13,19 +13,19 @@ export function closureStateAt(closure: Closure, minutes: number | null): Closur
   return minutes < reopensAt ? 'closed' : 'reopened'
 }
 
-// Says what the road is doing now, not what kind of record this is. The detail
-// header used to read "road closed" unconditionally, so at 07:45 it asserted a
-// road was shut that did not close for another 85 minutes — while the timeline
-// directly below it drew the same closure as not yet closed.
+// Says where the stage is up to, not what the road is doing — the reader is here
+// for the rally. The window clock sits directly left of this label, so the times
+// stay out of it. With no time to judge against, it names the record instead of
+// asserting a state: the header used to read "road closed" at every hour of the
+// day, including 85 minutes before that road shut.
 export function closureLabel(closure: Closure, minutes: number | null): string {
-  const { closesAt, reopensAt } = windowOf(closure)
   switch (closureStateAt(closure, minutes)) {
     case 'closed':
-      return 'closed now'
+      return 'live'
     case 'reopened':
-      return `reopened ${formatClock(reopensAt)}`
+      return 'finished'
     case 'pending':
-      return minutes === null ? 'road closed' : `closes ${formatClock(closesAt)}`
+      return minutes === null ? 'road closure' : 'upcoming'
   }
 }
 

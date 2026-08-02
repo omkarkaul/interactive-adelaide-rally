@@ -170,7 +170,7 @@ describe('stage detail view', () => {
   // The header used to read "road closed" whatever the time, so it contradicted
   // the timeline on the same screen and told people a road was shut 85 minutes
   // before it was.
-  it('states what the road is doing at the scrubbed time, not just that it closes', async () => {
+  it('states where the stage is up to at the scrubbed time, not just that it closes', async () => {
     await userEvent.click(card('SS4'))
     const setTime = (clock: string) =>
       fireEvent.change(screen.getByRole('slider', { name: /time of day/i }), {
@@ -178,15 +178,15 @@ describe('stage detail view', () => {
       })
 
     setTime('08:00')
-    expect(screen.getByText('closes 09:10')).toBeInTheDocument()
-    expect(screen.queryByText('closed now')).not.toBeInTheDocument()
+    expect(screen.getByText('upcoming')).toBeInTheDocument()
+    expect(screen.queryByText('live')).not.toBeInTheDocument()
 
     setTime('12:00')
-    expect(screen.getByText('closed now')).toBeInTheDocument()
+    expect(screen.getByText('live')).toBeInTheDocument()
 
     setTime('18:00')
-    expect(screen.getByText('reopened 17:10')).toBeInTheDocument()
-    expect(screen.queryByText('closed now')).not.toBeInTheDocument()
+    expect(screen.getByText('finished')).toBeInTheDocument()
+    expect(screen.queryByText('live')).not.toBeInTheDocument()
   })
 
   it('marks an unconfirmed window as provisional in the detail view', async () => {

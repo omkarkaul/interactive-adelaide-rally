@@ -203,13 +203,13 @@ export function ClosureGantt({ year, day, envelope, focus, minutes, onHover, onS
           carries more than it did when state was colour alone. */}
       <ul className="gantt__legend">
         <li>
-          <span className="gantt__key gantt__key--pending" /> not yet closed
+          <span className="gantt__key gantt__key--pending" /> upcoming
         </li>
         <li>
-          <span className="gantt__key gantt__key--closed" /> closed now
+          <span className="gantt__key gantt__key--closed" /> live
         </li>
         <li>
-          <span className="gantt__key gantt__key--reopened" /> reopened
+          <span className="gantt__key gantt__key--reopened" /> finished
         </li>
       </ul>
     </div>

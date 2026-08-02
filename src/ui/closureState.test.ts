@@ -64,22 +64,22 @@ describe('closureLabel', () => {
   // The detail header used to read "road closed" at every time of day, so at
   // 07:45 it asserted a road was shut that did not close for another 85 minutes,
   // while the timeline below it drew the same closure as not yet closed.
-  it('says when the road closes, before it closes', () => {
-    expect(label('06:00')).toBe('closes 07:45')
-    expect(label('07:44')).toBe('closes 07:45')
+  it('calls the stage upcoming before its window opens', () => {
+    expect(label('06:00')).toBe('upcoming')
+    expect(label('07:44')).toBe('upcoming')
   })
 
-  it('says the road is closed only while it is closed', () => {
-    expect(label('07:45')).toBe('closed now')
-    expect(label('12:44')).toBe('closed now')
+  it('calls the stage live only within its window', () => {
+    expect(label('07:45')).toBe('live')
+    expect(label('12:44')).toBe('live')
   })
 
-  it('says when the road reopened, once it has', () => {
-    expect(label('12:45')).toBe('reopened 12:45')
-    expect(label('18:00')).toBe('reopened 12:45')
+  it('calls the stage finished once the window has passed', () => {
+    expect(label('12:45')).toBe('finished')
+    expect(label('18:00')).toBe('finished')
   })
 
-  it('falls back to a neutral description when there is no time to judge against', () => {
-    expect(closureLabel(ss1, null)).toBe('road closed')
+  it('names the record rather than asserting a state when there is no time to judge against', () => {
+    expect(closureLabel(ss1, null)).toBe('road closure')
   })
 })
