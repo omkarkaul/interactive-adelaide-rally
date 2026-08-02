@@ -189,6 +189,14 @@ export function RallyMap({
         handlers.current.onSelect(null)
       })
 
+      // MapLibre renders compact attribution already expanded and offers no
+      // option to start it closed. Stripping the class leaves the (i) button,
+      // which still opens it — the credit stays present and reachable.
+      instance
+        .getContainer()
+        .querySelector('.maplibregl-ctrl-attrib')
+        ?.classList.remove('maplibregl-compact-show')
+
       setReady(true)
     })
 

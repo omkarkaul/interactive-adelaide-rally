@@ -8,6 +8,7 @@ export interface FakeMap {
   featureState: Map<string, Record<string, unknown>>
   layoutProperties: Map<string, unknown>
   paintProperties: Map<string, unknown>
+  getContainer: () => HTMLElement
   getLayer: (id: string) => { id: string } | undefined
   moveLayer: (id: string, beforeId?: string) => void
   fitBounds: ReturnType<typeof vi.fn>
@@ -100,6 +101,10 @@ export class FakeMapLibreMap implements FakeMap {
     this.featureState.set(`${target.source}/${target.id}`, state)
     return this
   }
+  getContainer() {
+    return document.createElement('div')
+  }
+
   getCanvas() {
     return { style: {} as Record<string, string> }
   }

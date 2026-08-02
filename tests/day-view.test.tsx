@@ -134,11 +134,15 @@ describe('day view', () => {
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('SS4')
   })
 
-  it('carries the safety notice and a source link on every view', () => {
-    expect(screen.getByRole('note')).toHaveTextContent(/closed public roads/i)
+  // The safety notice belongs to the stage view, not the day list.
+  it('carries a source link on the day view, and the safety notice on a stage', async () => {
+    expect(screen.queryByRole('note')).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: /adelaiderally\.com\.au\/route/ })).toHaveAttribute(
       'href',
       'https://www.adelaiderally.com.au/route',
     )
+
+    await userEvent.click(card('SS4'))
+    expect(screen.getByRole('note')).toHaveTextContent(/closed public roads/i)
   })
 })

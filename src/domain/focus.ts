@@ -2,7 +2,7 @@ import type { Focus, StageCode } from './types'
 
 export type FocusAction =
   | { type: 'hover'; code: StageCode }
-  | { type: 'unhover'; code: StageCode }
+  | { type: 'unhover'; code?: StageCode }
   | { type: 'select'; code: StageCode }
   | { type: 'toggle'; code: StageCode }
   | { type: 'clear' }
@@ -14,8 +14,12 @@ export function focusReducer(focus: Focus, action: FocusAction): Focus {
     case 'hover':
       // A selection is sticky: hovering elsewhere must not steal focus from it.
       return focus.kind === 'selected' ? focus : { kind: 'hover', code: action.code }
+    // Only ever drops a hover. Without a code it drops whatever hover is held,
+    // which is what a pointer leaving a stage means; a selection survives either
+    // way, because leaving a line is not a decision to close the stage.
     case 'unhover':
-      return focus.kind === 'hover' && focus.code === action.code ? NO_FOCUS : focus
+      if (focus.kind !== 'hover') return focus
+      return action.code === undefined || focus.code === action.code ? NO_FOCUS : focus
     case 'select':
       return { kind: 'selected', code: action.code }
     case 'toggle':

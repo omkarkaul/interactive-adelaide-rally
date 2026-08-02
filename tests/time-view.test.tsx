@@ -67,9 +67,11 @@ describe('time view', () => {
     maps.length = 0
   })
 
-  it('spans the day envelope in five minute steps', () => {
+  // The scrub opens before the first road shuts, so the early morning reads as
+  // "still open" instead of the scale beginning at the first closure.
+  it('starts at 06:30 and runs to the last reopening, in five minute steps', () => {
     const input = scrubber() as HTMLInputElement
-    expect(input.min).toBe(String(parseClock('07:45')))
+    expect(input.min).toBe(String(parseClock('06:30')))
     expect(input.max).toBe(String(parseClock('19:10')))
     expect(input.step).toBe('5')
   })
@@ -128,10 +130,11 @@ describe('time view', () => {
     expect(card('SS2')).toHaveClass('is-dimmed')
   })
 
+  // The end still follows the day; only the start is pinned.
   it('rebases the scrubber onto each day envelope', async () => {
     await userEvent.click(screen.getByRole('tab', { name: /Day 3/ }))
     const input = scrubber() as HTMLInputElement
-    expect(input.min).toBe(String(parseClock('08:00')))
+    expect(input.min).toBe(String(parseClock('06:30')))
     expect(input.max).toBe(String(parseClock('18:00')))
     expect(readout()).toHaveTextContent('08:00')
   })

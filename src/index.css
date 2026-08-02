@@ -267,11 +267,6 @@ a {
   flex: 0 0 auto;
 }
 
-.stage-panel + .app__panel-footer .safety-notice,
-.app__panel > .safety-notice {
-  margin: 8px 8px 0;
-}
-
 .stage-panel__count {
   margin: 0;
   padding: 10px 12px 2px;
@@ -1017,7 +1012,6 @@ a {
        around it rather than the bar itself being drawn that tall. */
     height: 24px;
     padding: 14px 0;
-    margin-bottom: -14px;
     background: var(--bg-panel);
     border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
     cursor: grab;

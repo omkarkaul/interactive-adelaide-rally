@@ -1,6 +1,6 @@
 import { emphasis } from '../domain/focus'
 import { closuresForDay, stagesForDay } from '../domain/link'
-import { formatClock, windowOf } from '../domain/time'
+import { formatClock, windowOf, type Window } from '../domain/time'
 import type { Focus, RallyYear, StageCode } from '../domain/types'
 import { token } from '../tokens'
 import { closureStateAt, type ClosureState } from './closureState'
@@ -28,6 +28,9 @@ const STATE_COLOR: Record<ClosureState, string> = {
 interface Props {
   year: RallyYear
   day: number
+  // Shared with the scrubber rather than derived from the closures, so the two
+  // cannot drift apart and leave the now-line off the thumb.
+  envelope: Window
   focus: Focus
   minutes: number
   onHover: (code: StageCode | null) => void
@@ -59,14 +62,13 @@ export function hourTicks(from: number, to: number, width: number): number[] {
   return ticks
 }
 
-export function ClosureGantt({ year, day, focus, minutes, onHover, onSelect }: Props) {
+export function ClosureGantt({ year, day, envelope, focus, minutes, onHover, onSelect }: Props) {
   const [ref, { width }] = useElementSize<HTMLDivElement>()
 
   const closures = closuresForDay(year, day)
   const stages = stagesForDay(year, day)
   const windows = closures.map(windowOf)
-  const from = Math.min(...windows.map((w) => w.closesAt))
-  const to = Math.max(...windows.map((w) => w.reopensAt))
+  const { closesAt: from, reopensAt: to } = envelope
 
   // The axis sits at the top, directly under the scrubber it shares a scale
   // with, rather than at the bottom where it drifts away from the control.

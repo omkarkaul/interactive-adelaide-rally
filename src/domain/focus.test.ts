@@ -5,6 +5,26 @@ import type { Focus } from './types'
 const hover = (code: string): Focus => ({ kind: 'hover', code })
 const selected = (code: string): Focus => ({ kind: 'selected', code })
 
+describe('unhover without a code', () => {
+  // Leaving a stage line is not a decision to close the open stage. This used to
+  // dispatch 'clear', so moving the pointer off any line on the map dropped the
+  // reader back to the day list.
+  it('drops a hover', () => {
+    const hovering = focusReducer(NO_FOCUS, { type: 'hover', code: 'SS4' })
+    expect(focusReducer(hovering, { type: 'unhover' })).toEqual(NO_FOCUS)
+  })
+
+  it('leaves a selection alone', () => {
+    const selected = focusReducer(NO_FOCUS, { type: 'select', code: 'SS4' })
+    expect(focusReducer(selected, { type: 'unhover' })).toBe(selected)
+  })
+
+  it('still ignores an unhover naming a different stage', () => {
+    const hovering = focusReducer(NO_FOCUS, { type: 'hover', code: 'SS4' })
+    expect(focusReducer(hovering, { type: 'unhover', code: 'SS7' })).toBe(hovering)
+  })
+})
+
 describe('focusReducer', () => {
   it('takes hover from nothing', () => {
     expect(focusReducer(NO_FOCUS, { type: 'hover', code: 'SS4' })).toEqual(hover('SS4'))

@@ -5,7 +5,7 @@ import { availableYears } from './domain/registry'
 import { focusReducer, NO_FOCUS } from './domain/focus'
 import { closuresForDay } from './domain/link'
 import { resolveStageDetail } from './domain/detail'
-import { clampToWindow, envelopeOf, minutesOfDay } from './domain/time'
+import { clampToWindow, envelopeOf, minutesOfDay, parseClock } from './domain/time'
 import { DayTabs } from './ui/DayTabs'
 import { StagePanel } from './ui/StagePanel'
 import { StageDetail } from './ui/StageDetail'
@@ -14,7 +14,7 @@ import { SheetHandle } from './ui/SheetHandle'
 import { SNAP_POINTS } from './ui/sheet'
 import { ClosureGantt } from './ui/ClosureGantt'
 import { TimeScrubber } from './ui/TimeScrubber'
-import { SafetyNotice, SourceNotice } from './ui/SafetyNotice'
+import { SourceNotice } from './ui/SafetyNotice'
 import { parseUrlState, toSearch } from './url'
 import type { Cursor, RallyYear, StageCode } from './domain/types'
 
@@ -25,6 +25,10 @@ const RallyMap = lazy(() =>
 )
 
 const NARROW = '(max-width: 860px)'
+
+// The scrub starts before the first road shuts, so the morning reads as "still
+// open" rather than beginning at the first closure.
+const SCRUB_START = parseClock('06:30')
 
 function useIsNarrow(): boolean {
   const [narrow, setNarrow] = useState(
@@ -102,9 +106,20 @@ export default function App({
     }
   }, [year, day])
 
-  const envelope = useMemo(
+  const closureEnvelope = useMemo(
     () => (year ? envelopeOf(closuresForDay(year, day)) : null),
     [year, day],
+  )
+
+  // The scrubber and the Gantt share this one window; the Gantt used to derive
+  // its own from the closures, which would leave the now-line off the thumb.
+  const envelope = useMemo(
+    () =>
+      closureEnvelope && {
+        closesAt: Math.min(closureEnvelope.closesAt, SCRUB_START),
+        reopensAt: closureEnvelope.reopensAt,
+      },
+    [closureEnvelope],
   )
 
   const liveNow = useMemo(() => {
@@ -113,14 +128,17 @@ export default function App({
   }, [year, day])
 
   useEffect(() => {
-    if (!envelope) return
+    if (!envelope || !closureEnvelope) return
     // A time in the URL wins once, on first load; day changes then rebase normally.
     const restored = restoredTime.current
     restoredTime.current = null
+    // The thumb still lands on the first closure, not on the new 06:30 floor.
     setMinutes(
-      restored === null ? initialMinutes(envelope, liveNow) : clampToWindow(restored, envelope),
+      restored === null
+        ? initialMinutes(closureEnvelope, liveNow)
+        : clampToWindow(restored, envelope),
     )
-  }, [envelope, liveNow])
+  }, [envelope, closureEnvelope, liveNow])
 
   // The selected stage is the detail view: one selection, one place to look.
   const detail = useMemo(
@@ -130,8 +148,10 @@ export default function App({
 
   useEffect(() => setCursor(null), [detail?.code])
 
+  // 'clear' would wipe a selection too, so leaving any stage line sent an open
+  // stage back to the day list. 'unhover' drops only a hover.
   const onHover = useCallback((code: StageCode | null) => {
-    dispatch(code ? { type: 'hover', code } : { type: 'clear' })
+    dispatch(code ? { type: 'hover', code } : { type: 'unhover' })
   }, [])
 
   const onSelect = useCallback((code: StageCode | null) => {
@@ -217,11 +237,6 @@ export default function App({
             />
           ) : (
             <>
-              {/* Above the list, not below it: in the footer it sat 570-750px
-                  down a scrolling panel, which on the landing screen is the
-                  same as absent. It travels with any surface showing a closure
-                  time, and every card here shows one. */}
-              <SafetyNotice />
               <StagePanel
                 year={year}
                 day={day}
@@ -295,6 +310,7 @@ export default function App({
               <ClosureGantt
                 year={year}
                 day={day}
+                envelope={envelope}
                 focus={focus}
                 minutes={minutes}
                 onHover={onHover}
